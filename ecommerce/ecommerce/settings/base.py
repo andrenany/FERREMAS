@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # external packages
     "rest_framework",
     # insterlan app
+    "ecommerce.product",
 ]
 
 MIDDLEWARE = [
