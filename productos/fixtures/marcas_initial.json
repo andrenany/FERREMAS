@@ -1,0 +1,86 @@
+[
+    {
+        "model": "productos.marca",
+        "pk": 1,
+        "fields": {
+            "nombre": "Stanley",
+            "slug": "stanley",
+            "descripcion": "Herramientas profesionales Stanley",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.marca",
+        "pk": 2,
+        "fields": {
+            "nombre": "Bosch",
+            "slug": "bosch",
+            "descripcion": "Herramientas eléctricas y manuales Bosch",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.marca",
+        "pk": 3,
+        "fields": {
+            "nombre": "Makita",
+            "slug": "makita",
+            "descripcion": "Herramientas profesionales Makita",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.marca",
+        "pk": 4,
+        "fields": {
+            "nombre": "Polpaico",
+            "slug": "polpaico",
+            "descripcion": "Materiales de construcción Polpaico",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.marca",
+        "pk": 5,
+        "fields": {
+            "nombre": "Sika",
+            "slug": "sika",
+            "descripcion": "Productos químicos para construcción Sika",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.marca",
+        "pk": 6,
+        "fields": {
+            "nombre": "Tricolor",
+            "slug": "tricolor",
+            "descripcion": "Pinturas y barnices Tricolor",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.marca",
+        "pk": 7,
+        "fields": {
+            "nombre": "3M",
+            "slug": "3m",
+            "descripcion": "Productos de seguridad y protección 3M",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    }
+] 

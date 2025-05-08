@@ -1,0 +1,42 @@
+Actualización de tu Pedido - FERREMAS
+Pedido #{{ pedido.numero }}
+
+Estimado/a {{ usuario.get_full_name }},
+
+Tu pedido ha sido actualizado al estado: {{ pedido.get_estado_display }}
+
+Detalles del Pedido:
+- Fecha de creación: {{ pedido.fecha_creacion|date:"d/m/Y H:i" }}
+- Tipo de entrega: {{ pedido.get_tipo_entrega_display }}
+- Total: ${{ pedido.total }}
+
+{% if pedido.tipo_entrega == 'despacho' %}
+Dirección de entrega:
+{{ pedido.direccion_entrega }}
+{{ pedido.ciudad_entrega }}, {{ pedido.region_entrega }}
+{% endif %}
+
+{% if pedido.estado == 'pagado' %}
+Hemos recibido tu pago y comenzaremos a preparar tu pedido.
+{% elif pedido.estado == 'preparacion' %}
+Tu pedido está siendo preparado en nuestro almacén.
+{% elif pedido.estado == 'listo_retiro' %}
+Tu pedido está listo para ser retirado en nuestra tienda.
+{% elif pedido.estado == 'en_despacho' %}
+Tu pedido está en camino a la dirección indicada.
+{% elif pedido.estado == 'entregado' %}
+Tu pedido ha sido entregado exitosamente.
+{% elif pedido.estado == 'cancelado' %}
+Tu pedido ha sido cancelado.
+{% endif %}
+
+{% if pedido.notas %}
+Notas adicionales:
+{{ pedido.notas }}
+{% endif %}
+
+Para ver más detalles de tu pedido, ingresa a tu cuenta en nuestra plataforma.
+
+--
+Este es un mensaje automático, por favor no responder.
+FERREMAS - Ferretería y Materiales de Construcción 

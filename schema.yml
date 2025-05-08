@@ -1,0 +1,6221 @@
+openapi: 3.0.3
+info:
+  title: API de FERREMAS
+  version: 1.0.0
+  description: API para la gestión de productos, inventario y ventas de FERREMAS
+paths:
+  /api/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      description: Endpoint para obtener información del usuario actual
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/newsletter/:
+    post:
+      operationId: auth_newsletter_create
+      description: Endpoint para suscribirse/desuscribirse del newsletter
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/password/change/{id}/:
+    post:
+      operationId: auth_password_change_create
+      description: Endpoint para cambiar contraseña
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/password/reset/:
+    post:
+      operationId: auth_password_reset_create
+      description: Endpoint para solicitar restablecimiento de contraseña
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/password/reset/confirm/:
+    post:
+      operationId: auth_password_reset_confirm_create
+      description: Endpoint para confirmar restablecimiento de contraseña
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/register/admin/:
+    post:
+      operationId: auth_register_admin_create
+      description: Endpoint para crear usuarios administradores
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminRegistration'
+          description: ''
+  /api/auth/register/cliente/:
+    post:
+      operationId: auth_register_cliente_create
+      description: Endpoint para registro de clientes
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClienteRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClienteRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteRegistration'
+          description: ''
+  /api/auth/register/staff/:
+    post:
+      operationId: auth_register_staff_create
+      description: Endpoint para crear usuarios del personal
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRegistration'
+          description: ''
+  /api/auth/token/:
+    post:
+      operationId: auth_token_create
+      description: Vista personalizada para obtener tokens JWT
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/auth/users/:
+    get:
+      operationId: auth_users_list
+      description: ViewSet para gestionar usuarios
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+    post:
+      operationId: auth_users_create
+      description: ViewSet para gestionar usuarios
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/users/{id}/:
+    get:
+      operationId: auth_users_retrieve
+      description: ViewSet para gestionar usuarios
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: auth_users_update
+      description: ViewSet para gestionar usuarios
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    patch:
+      operationId: auth_users_partial_update
+      description: ViewSet para gestionar usuarios
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    delete:
+      operationId: auth_users_destroy
+      description: ViewSet para gestionar usuarios
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/auth/users/{id}/change_password/:
+    post:
+      operationId: auth_users_change_password_create
+      description: Endpoint para cambiar contraseña
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/users/{id}/toggle_newsletter/:
+    post:
+      operationId: auth_users_toggle_newsletter_create
+      description: Endpoint para suscribirse/desuscribirse del newsletter
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this usuario.
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/users/create_admin/:
+    post:
+      operationId: auth_users_create_admin_create
+      description: Endpoint para crear usuarios administradores
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminRegistration'
+          description: ''
+  /api/auth/users/create_cliente/:
+    post:
+      operationId: auth_users_create_cliente_create
+      description: Endpoint para registro de clientes
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClienteRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClienteRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteRegistration'
+          description: ''
+  /api/auth/users/create_staff/:
+    post:
+      operationId: auth_users_create_staff_create
+      description: Endpoint para crear usuarios del personal
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRegistration'
+          description: ''
+  /api/auth/users/me/:
+    get:
+      operationId: auth_users_me_retrieve
+      description: Endpoint para obtener información del usuario actual
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/users/reset_password/:
+    post:
+      operationId: auth_users_reset_password_create
+      description: Endpoint para solicitar restablecimiento de contraseña
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/users/reset_password_confirm/:
+    post:
+      operationId: auth_users_reset_password_confirm_create
+      description: Endpoint para confirmar restablecimiento de contraseña
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/notificaciones/notificaciones/:
+    get:
+      operationId: notificaciones_notificaciones_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notificacion'
+          description: ''
+  /api/notificaciones/notificaciones/{id}/:
+    get:
+      operationId: notificaciones_notificaciones_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+          description: ''
+  /api/notificaciones/notificaciones/{id}/marcar_leida/:
+    post:
+      operationId: notificaciones_notificaciones_marcar_leida_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+          description: ''
+  /api/notificaciones/notificaciones/no_leidas/:
+    get:
+      operationId: notificaciones_notificaciones_no_leidas_retrieve
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+          description: ''
+  /api/notificaciones/plantillas/:
+    get:
+      operationId: notificaciones_plantillas_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlantillaNotificacion'
+          description: ''
+  /api/notificaciones/plantillas/{id}/:
+    get:
+      operationId: notificaciones_plantillas_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Plantilla de notificación.
+        required: true
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlantillaNotificacion'
+          description: ''
+  /api/notificaciones/preferencias/:
+    get:
+      operationId: notificaciones_preferencias_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PreferenciasNotificacion'
+          description: ''
+    post:
+      operationId: notificaciones_preferencias_create
+      tags:
+      - notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreferenciasNotificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PreferenciasNotificacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PreferenciasNotificacionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferenciasNotificacion'
+          description: ''
+  /api/notificaciones/preferencias/{id}/:
+    get:
+      operationId: notificaciones_preferencias_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferenciasNotificacion'
+          description: ''
+    put:
+      operationId: notificaciones_preferencias_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreferenciasNotificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PreferenciasNotificacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PreferenciasNotificacionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferenciasNotificacion'
+          description: ''
+    patch:
+      operationId: notificaciones_preferencias_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPreferenciasNotificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPreferenciasNotificacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPreferenciasNotificacionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferenciasNotificacion'
+          description: ''
+    delete:
+      operationId: notificaciones_preferencias_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pagos/conciliaciones/:
+    get:
+      operationId: pagos_conciliaciones_list
+      description: ViewSet para gestionar conciliaciones de pagos
+      parameters:
+      - in: query
+        name: estado
+        schema:
+          type: string
+          enum:
+          - conciliado
+          - discrepancia
+          - pendiente
+        description: |-
+          * `pendiente` - Pendiente
+          * `conciliado` - Conciliado
+          * `discrepancia` - Con Discrepancia
+      - in: query
+        name: transaccion__pedido__numero
+        schema:
+          type: string
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConciliacionPago'
+          description: ''
+    post:
+      operationId: pagos_conciliaciones_create
+      description: ViewSet para gestionar conciliaciones de pagos
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConciliacionPago'
+          description: ''
+  /api/pagos/conciliaciones/{id}/:
+    get:
+      operationId: pagos_conciliaciones_retrieve
+      description: ViewSet para gestionar conciliaciones de pagos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conciliacion pago.
+        required: true
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConciliacionPago'
+          description: ''
+    put:
+      operationId: pagos_conciliaciones_update
+      description: ViewSet para gestionar conciliaciones de pagos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conciliacion pago.
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConciliacionPago'
+          description: ''
+    patch:
+      operationId: pagos_conciliaciones_partial_update
+      description: ViewSet para gestionar conciliaciones de pagos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conciliacion pago.
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConciliacionPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConciliacionPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConciliacionPagoRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConciliacionPago'
+          description: ''
+    delete:
+      operationId: pagos_conciliaciones_destroy
+      description: ViewSet para gestionar conciliaciones de pagos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conciliacion pago.
+        required: true
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pagos/conciliaciones/{id}/marcar_conciliado/:
+    post:
+      operationId: pagos_conciliaciones_marcar_conciliado_create
+      description: Marca una conciliación como completada
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this conciliacion pago.
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConciliacionPagoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConciliacionPago'
+          description: ''
+  /api/pagos/facturas/:
+    get:
+      operationId: pagos_facturas_list
+      description: ViewSet para gestionar facturas electrónicas
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FacturaElectronica'
+          description: ''
+    post:
+      operationId: pagos_facturas_create
+      description: ViewSet para gestionar facturas electrónicas
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaElectronica'
+          description: ''
+  /api/pagos/facturas/{id}/:
+    get:
+      operationId: pagos_facturas_retrieve
+      description: ViewSet para gestionar facturas electrónicas
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaElectronica'
+          description: ''
+    put:
+      operationId: pagos_facturas_update
+      description: ViewSet para gestionar facturas electrónicas
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaElectronica'
+          description: ''
+    patch:
+      operationId: pagos_facturas_partial_update
+      description: ViewSet para gestionar facturas electrónicas
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFacturaElectronicaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFacturaElectronicaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFacturaElectronicaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaElectronica'
+          description: ''
+    delete:
+      operationId: pagos_facturas_destroy
+      description: ViewSet para gestionar facturas electrónicas
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pagos/facturas/{id}/generar_y_enviar/:
+    post:
+      operationId: pagos_facturas_generar_y_enviar_create
+      description: Genera y envía una factura al SII
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FacturaElectronicaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaElectronica'
+          description: ''
+  /api/pagos/transacciones/:
+    get:
+      operationId: pagos_transacciones_list
+      description: ViewSet para gestionar transacciones de Mercado Pago
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransaccionMercadoPago'
+          description: ''
+    post:
+      operationId: pagos_transacciones_create
+      description: Crea una preferencia de pago en Mercado Pago
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransaccionMercadoPago'
+          description: ''
+  /api/pagos/transacciones/{id}/:
+    get:
+      operationId: pagos_transacciones_retrieve
+      description: ViewSet para gestionar transacciones de Mercado Pago
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransaccionMercadoPago'
+          description: ''
+    put:
+      operationId: pagos_transacciones_update
+      description: ViewSet para gestionar transacciones de Mercado Pago
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransaccionMercadoPago'
+          description: ''
+    patch:
+      operationId: pagos_transacciones_partial_update
+      description: ViewSet para gestionar transacciones de Mercado Pago
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaccionMercadoPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaccionMercadoPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaccionMercadoPagoRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransaccionMercadoPago'
+          description: ''
+    delete:
+      operationId: pagos_transacciones_destroy
+      description: ViewSet para gestionar transacciones de Mercado Pago
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pagos/transacciones/webhook/:
+    post:
+      operationId: pagos_transacciones_webhook_create
+      description: Procesa webhooks de Mercado Pago
+      tags:
+      - pagos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransaccionMercadoPagoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransaccionMercadoPago'
+          description: ''
+  /api/pedidos/carrito/{id}/:
+    get:
+      operationId: pedidos_carrito_retrieve
+      description: ViewSet para gestionar el carrito de compras
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carrito'
+          description: ''
+    delete:
+      operationId: pedidos_carrito_destroy
+      description: ViewSet para gestionar el carrito de compras
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pedidos/carrito/{id}/actualizar_cantidad/:
+    put:
+      operationId: pedidos_carrito_actualizar_cantidad_update
+      description: Actualiza la cantidad de un producto en el carrito
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarritoItemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CarritoItemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CarritoItemRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carrito'
+          description: ''
+  /api/pedidos/carrito/{id}/agregar_producto/:
+    post:
+      operationId: pedidos_carrito_agregar_producto_create
+      description: Agrega un producto al carrito
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarritoItemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CarritoItemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CarritoItemRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carrito'
+          description: ''
+  /api/pedidos/carrito/{id}/limpiar/:
+    post:
+      operationId: pedidos_carrito_limpiar_create
+      description: Limpia el carrito
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pedidos/pedidos/:
+    get:
+      operationId: pedidos_pedidos_list
+      description: ViewSet para gestionar pedidos
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PedidoList'
+          description: ''
+    post:
+      operationId: pedidos_pedidos_create
+      description: ViewSet para gestionar pedidos
+      tags:
+      - pedidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearPedidoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CrearPedidoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CrearPedidoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrearPedido'
+          description: ''
+  /api/pedidos/pedidos/{numero}/:
+    get:
+      operationId: pedidos_pedidos_retrieve
+      description: ViewSet para gestionar pedidos
+      parameters:
+      - in: path
+        name: numero
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PedidoDetail'
+          description: ''
+    put:
+      operationId: pedidos_pedidos_update
+      description: ViewSet para gestionar pedidos
+      parameters:
+      - in: path
+        name: numero
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PedidoDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PedidoDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PedidoDetail'
+          description: ''
+    patch:
+      operationId: pedidos_pedidos_partial_update
+      description: ViewSet para gestionar pedidos
+      parameters:
+      - in: path
+        name: numero
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPedidoDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPedidoDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPedidoDetailRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PedidoDetail'
+          description: ''
+    delete:
+      operationId: pedidos_pedidos_destroy
+      description: ViewSet para gestionar pedidos
+      parameters:
+      - in: path
+        name: numero
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pedidos/pedidos/{numero}/actualizar_estado/:
+    post:
+      operationId: pedidos_pedidos_actualizar_estado_create
+      description: Actualiza el estado de un pedido
+      parameters:
+      - in: path
+        name: numero
+        schema:
+          type: string
+        required: true
+      tags:
+      - pedidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarEstadoPedidoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActualizarEstadoPedidoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActualizarEstadoPedidoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PedidoDetail'
+          description: ''
+  /api/pedidos/pedidos/listos_despacho/:
+    get:
+      operationId: pedidos_pedidos_listos_despacho_list
+      description: Lista los pedidos listos para despacho
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PedidoList'
+          description: ''
+  /api/pedidos/pedidos/listos_retiro/:
+    get:
+      operationId: pedidos_pedidos_listos_retiro_list
+      description: Lista los pedidos listos para retiro
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PedidoList'
+          description: ''
+  /api/pedidos/pedidos/mis_pedidos/:
+    get:
+      operationId: pedidos_pedidos_mis_pedidos_list
+      description: Lista los pedidos del usuario actual
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PedidoList'
+          description: ''
+  /api/pedidos/pedidos/pendientes_preparacion/:
+    get:
+      operationId: pedidos_pedidos_pendientes_preparacion_list
+      description: Lista los pedidos pendientes de preparación
+      tags:
+      - pedidos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PedidoList'
+          description: ''
+  /api/productos/atributos/:
+    get:
+      operationId: productos_atributos_list
+      description: ViewSet para gestionar atributos de productos
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AtributoProducto'
+          description: ''
+    post:
+      operationId: productos_atributos_create
+      description: ViewSet para gestionar atributos de productos
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtributoProductoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AtributoProductoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AtributoProductoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtributoProducto'
+          description: ''
+  /api/productos/atributos/{id}/:
+    get:
+      operationId: productos_atributos_retrieve
+      description: ViewSet para gestionar atributos de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atributo producto.
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtributoProducto'
+          description: ''
+    put:
+      operationId: productos_atributos_update
+      description: ViewSet para gestionar atributos de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atributo producto.
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtributoProductoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AtributoProductoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AtributoProductoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtributoProducto'
+          description: ''
+    patch:
+      operationId: productos_atributos_partial_update
+      description: ViewSet para gestionar atributos de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atributo producto.
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAtributoProductoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAtributoProductoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAtributoProductoRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtributoProducto'
+          description: ''
+    delete:
+      operationId: productos_atributos_destroy
+      description: ViewSet para gestionar atributos de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this atributo producto.
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/productos/categorias/:
+    get:
+      operationId: productos_categorias_list
+      description: ViewSet para gestionar categorías de productos
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+          description: ''
+    post:
+      operationId: productos_categorias_create
+      description: ViewSet para gestionar categorías de productos
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+  /api/productos/categorias/{slug}/:
+    get:
+      operationId: productos_categorias_retrieve
+      description: ViewSet para gestionar categorías de productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    put:
+      operationId: productos_categorias_update
+      description: ViewSet para gestionar categorías de productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    patch:
+      operationId: productos_categorias_partial_update
+      description: ViewSet para gestionar categorías de productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    delete:
+      operationId: productos_categorias_destroy
+      description: ViewSet para gestionar categorías de productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/productos/categorias/tree/:
+    get:
+      operationId: productos_categorias_tree_list
+      description: Obtiene el árbol completo de categorías
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+          description: ''
+  /api/productos/etiquetas/:
+    get:
+      operationId: productos_etiquetas_list
+      description: ViewSet para gestionar etiquetas
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Etiqueta'
+          description: ''
+    post:
+      operationId: productos_etiquetas_create
+      description: ViewSet para gestionar etiquetas
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EtiquetaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EtiquetaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EtiquetaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Etiqueta'
+          description: ''
+  /api/productos/etiquetas/{slug}/:
+    get:
+      operationId: productos_etiquetas_retrieve
+      description: ViewSet para gestionar etiquetas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Etiqueta'
+          description: ''
+    put:
+      operationId: productos_etiquetas_update
+      description: ViewSet para gestionar etiquetas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EtiquetaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EtiquetaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EtiquetaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Etiqueta'
+          description: ''
+    patch:
+      operationId: productos_etiquetas_partial_update
+      description: ViewSet para gestionar etiquetas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEtiquetaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEtiquetaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEtiquetaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Etiqueta'
+          description: ''
+    delete:
+      operationId: productos_etiquetas_destroy
+      description: ViewSet para gestionar etiquetas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/productos/imagenes/:
+    get:
+      operationId: productos_imagenes_list
+      description: ViewSet para gestionar imágenes de productos
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagenProducto'
+          description: ''
+    post:
+      operationId: productos_imagenes_create
+      description: ViewSet para gestionar imágenes de productos
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImagenProductoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImagenProductoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImagenProductoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagenProducto'
+          description: ''
+  /api/productos/imagenes/{id}/:
+    get:
+      operationId: productos_imagenes_retrieve
+      description: ViewSet para gestionar imágenes de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this imagen producto.
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagenProducto'
+          description: ''
+    put:
+      operationId: productos_imagenes_update
+      description: ViewSet para gestionar imágenes de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this imagen producto.
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImagenProductoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImagenProductoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImagenProductoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagenProducto'
+          description: ''
+    patch:
+      operationId: productos_imagenes_partial_update
+      description: ViewSet para gestionar imágenes de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this imagen producto.
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedImagenProductoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedImagenProductoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedImagenProductoRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagenProducto'
+          description: ''
+    delete:
+      operationId: productos_imagenes_destroy
+      description: ViewSet para gestionar imágenes de productos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this imagen producto.
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/productos/marcas/:
+    get:
+      operationId: productos_marcas_list
+      description: ViewSet para gestionar marcas
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Marca'
+          description: ''
+    post:
+      operationId: productos_marcas_create
+      description: ViewSet para gestionar marcas
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarcaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarcaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarcaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marca'
+          description: ''
+  /api/productos/marcas/{slug}/:
+    get:
+      operationId: productos_marcas_retrieve
+      description: ViewSet para gestionar marcas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marca'
+          description: ''
+    put:
+      operationId: productos_marcas_update
+      description: ViewSet para gestionar marcas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarcaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarcaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarcaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marca'
+          description: ''
+    patch:
+      operationId: productos_marcas_partial_update
+      description: ViewSet para gestionar marcas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMarcaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMarcaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMarcaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marca'
+          description: ''
+    delete:
+      operationId: productos_marcas_destroy
+      description: ViewSet para gestionar marcas
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/productos/productos/:
+    get:
+      operationId: productos_productos_list
+      description: ViewSet principal para gestionar productos
+      parameters:
+      - in: query
+        name: activo
+        schema:
+          type: boolean
+      - in: query
+        name: categoria
+        schema:
+          type: string
+      - in: query
+        name: codigo
+        schema:
+          type: string
+      - in: query
+        name: descripcion
+        schema:
+          type: string
+      - in: query
+        name: destacado
+        schema:
+          type: boolean
+      - in: query
+        name: en_stock
+        schema:
+          type: boolean
+      - in: query
+        name: etiqueta
+        schema:
+          type: string
+      - in: query
+        name: marca
+        schema:
+          type: string
+      - in: query
+        name: necesita_reposicion
+        schema:
+          type: boolean
+      - in: query
+        name: nombre
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: precio_max
+        schema:
+          type: number
+      - in: query
+        name: precio_min
+        schema:
+          type: number
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoList'
+          description: ''
+    post:
+      operationId: productos_productos_create
+      description: ViewSet principal para gestionar productos
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoCreateUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductoCreateUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductoCreateUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoCreateUpdate'
+          description: ''
+  /api/productos/productos/{slug}/:
+    get:
+      operationId: productos_productos_retrieve
+      description: ViewSet principal para gestionar productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoDetail'
+          description: ''
+    put:
+      operationId: productos_productos_update
+      description: ViewSet principal para gestionar productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoCreateUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductoCreateUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductoCreateUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoCreateUpdate'
+          description: ''
+    patch:
+      operationId: productos_productos_partial_update
+      description: ViewSet principal para gestionar productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductoCreateUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductoCreateUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductoCreateUpdateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoCreateUpdate'
+          description: ''
+    delete:
+      operationId: productos_productos_destroy
+      description: ViewSet principal para gestionar productos
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/productos/productos/{slug}/actualizar_stock/:
+    post:
+      operationId: productos_productos_actualizar_stock_create
+      description: Actualiza el stock de un producto
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovimientoStockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MovimientoStockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovimientoStockRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoDetail'
+          description: ''
+  /api/productos/productos/buscar/:
+    get:
+      operationId: productos_productos_buscar_list
+      description: Busca productos por varios criterios
+      parameters:
+      - in: query
+        name: activo
+        schema:
+          type: boolean
+      - in: query
+        name: categoria
+        schema:
+          type: string
+        description: Slug de la categoría
+      - in: query
+        name: codigo
+        schema:
+          type: string
+      - in: query
+        name: descripcion
+        schema:
+          type: string
+      - in: query
+        name: destacado
+        schema:
+          type: boolean
+      - in: query
+        name: en_stock
+        schema:
+          type: boolean
+        description: Solo productos en stock
+      - in: query
+        name: etiqueta
+        schema:
+          type: string
+      - in: query
+        name: marca
+        schema:
+          type: string
+        description: Slug de la marca
+      - in: query
+        name: max_precio
+        schema:
+          type: number
+          format: double
+        description: Precio máximo
+      - in: query
+        name: min_precio
+        schema:
+          type: number
+          format: double
+        description: Precio mínimo
+      - in: query
+        name: necesita_reposicion
+        schema:
+          type: boolean
+      - in: query
+        name: nombre
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: precio_max
+        schema:
+          type: number
+      - in: query
+        name: precio_min
+        schema:
+          type: number
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Término de búsqueda
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoList'
+          description: ''
+  /api/productos/productos/necesitan_reposicion/:
+    get:
+      operationId: productos_productos_necesitan_reposicion_list
+      description: Lista los productos que necesitan reposición
+      parameters:
+      - in: query
+        name: activo
+        schema:
+          type: boolean
+      - in: query
+        name: categoria
+        schema:
+          type: string
+      - in: query
+        name: codigo
+        schema:
+          type: string
+      - in: query
+        name: descripcion
+        schema:
+          type: string
+      - in: query
+        name: destacado
+        schema:
+          type: boolean
+      - in: query
+        name: en_stock
+        schema:
+          type: boolean
+      - in: query
+        name: etiqueta
+        schema:
+          type: string
+      - in: query
+        name: marca
+        schema:
+          type: string
+      - in: query
+        name: necesita_reposicion
+        schema:
+          type: boolean
+      - in: query
+        name: nombre
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: precio_max
+        schema:
+          type: number
+      - in: query
+        name: precio_min
+        schema:
+          type: number
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - productos
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoList'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/sucursales/sucursales/:
+    get:
+      operationId: sucursales_sucursales_list
+      parameters:
+      - in: query
+        name: activo
+        schema:
+          type: boolean
+      - in: query
+        name: ciudad
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: region
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - sucursales
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sucursal'
+          description: ''
+    post:
+      operationId: sucursales_sucursales_create
+      tags:
+      - sucursales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SucursalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SucursalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SucursalRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sucursal'
+          description: ''
+  /api/sucursales/sucursales/{id}/:
+    get:
+      operationId: sucursales_sucursales_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sucursal.
+        required: true
+      tags:
+      - sucursales
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sucursal'
+          description: ''
+    put:
+      operationId: sucursales_sucursales_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sucursal.
+        required: true
+      tags:
+      - sucursales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SucursalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SucursalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SucursalRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sucursal'
+          description: ''
+    patch:
+      operationId: sucursales_sucursales_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sucursal.
+        required: true
+      tags:
+      - sucursales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSucursalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSucursalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSucursalRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sucursal'
+          description: ''
+    delete:
+      operationId: sucursales_sucursales_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sucursal.
+        required: true
+      tags:
+      - sucursales
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    ActualizarEstadoPedidoRequest:
+      type: object
+      description: Serializer para actualizar el estado de un pedido
+      properties:
+        estado:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        notas:
+          type: string
+      required:
+      - estado
+    AdminRegistration:
+      type: object
+      description: Serializador para el registro de administradores
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        rol:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
+        debe_cambiar_password:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - debe_cambiar_password
+      - email
+      - id
+      - is_active
+      - rol
+      - updated_at
+      - username
+    AdminRegistrationRequest:
+      type: object
+      description: Serializador para el registro de administradores
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+      required:
+      - email
+      - username
+    AtributoProducto:
+      type: object
+      description: Serializer para el modelo AtributoProducto
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 100
+        tipo:
+          $ref: '#/components/schemas/AtributoProductoTipoEnum'
+        opciones:
+          type: string
+          description: Opciones separadas por comas para tipo selección
+      required:
+      - id
+      - nombre
+      - tipo
+    AtributoProductoRequest:
+      type: object
+      description: Serializer para el modelo AtributoProducto
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        tipo:
+          $ref: '#/components/schemas/AtributoProductoTipoEnum'
+        opciones:
+          type: string
+          description: Opciones separadas por comas para tipo selección
+      required:
+      - nombre
+      - tipo
+    AtributoProductoTipoEnum:
+      enum:
+      - texto
+      - numero
+      - booleano
+      - seleccion
+      type: string
+      description: |-
+        * `texto` - Texto
+        * `numero` - Número
+        * `booleano` - Booleano
+        * `seleccion` - Selección
+    CambioPedido:
+      type: object
+      description: Serializer para cambios de estado en pedidos
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
+        estado_anterior:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        estado_nuevo:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        notas:
+          type: string
+      required:
+      - estado_anterior
+      - estado_nuevo
+      - fecha
+      - id
+    CambioPedidoRequest:
+      type: object
+      description: Serializer para cambios de estado en pedidos
+      properties:
+        estado_anterior:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        estado_nuevo:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        notas:
+          type: string
+      required:
+      - estado_anterior
+      - estado_nuevo
+    Carrito:
+      type: object
+      description: Serializer para el carrito de compras
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        usuario:
+          type: integer
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarritoItem'
+          readOnly: true
+        total:
+          type: string
+          readOnly: true
+        cantidad_items:
+          type: string
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+        actualizado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actualizado
+      - cantidad_items
+      - creado
+      - id
+      - items
+      - total
+      - usuario
+    CarritoItem:
+      type: object
+      description: Serializer para items del carrito
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        producto:
+          allOf:
+          - $ref: '#/components/schemas/ProductoList'
+          readOnly: true
+        cantidad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        precio_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        subtotal:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - precio_unitario
+      - producto
+      - subtotal
+    CarritoItemRequest:
+      type: object
+      description: Serializer para items del carrito
+      properties:
+        producto_id:
+          type: integer
+          writeOnly: true
+        cantidad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - producto_id
+    Categoria:
+      type: object
+      description: Serializer para el modelo Categoria
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        parent:
+          type: integer
+          nullable: true
+        activo:
+          type: boolean
+        children:
+          type: string
+          readOnly: true
+      required:
+      - children
+      - id
+      - nombre
+      - slug
+    CategoriaRequest:
+      type: object
+      description: Serializer para el modelo Categoria
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        parent:
+          type: integer
+          nullable: true
+        activo:
+          type: boolean
+      required:
+      - nombre
+      - slug
+    ClienteRegistration:
+      type: object
+      description: Serializador para el registro de clientes
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        rol:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
+        debe_cambiar_password:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - debe_cambiar_password
+      - email
+      - id
+      - is_active
+      - rol
+      - updated_at
+      - username
+    ClienteRegistrationRequest:
+      type: object
+      description: Serializador para el registro de clientes
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+      required:
+      - email
+      - password
+      - username
+    ConciliacionPago:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        transaccion:
+          allOf:
+          - $ref: '#/components/schemas/TransaccionMercadoPago'
+          readOnly: true
+        factura:
+          allOf:
+          - $ref: '#/components/schemas/FacturaElectronica'
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/ConciliacionPagoEstadoEnum'
+          readOnly: true
+        fecha_conciliacion:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        notas:
+          type: string
+        conciliado_por:
+          type: string
+          readOnly: true
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - conciliado_por
+      - estado
+      - factura
+      - fecha_actualizacion
+      - fecha_conciliacion
+      - fecha_creacion
+      - id
+      - transaccion
+    ConciliacionPagoEstadoEnum:
+      enum:
+      - pendiente
+      - conciliado
+      - discrepancia
+      type: string
+      description: |-
+        * `pendiente` - Pendiente
+        * `conciliado` - Conciliado
+        * `discrepancia` - Con Discrepancia
+    ConciliacionPagoRequest:
+      type: object
+      properties:
+        transaccion_id:
+          type: integer
+          writeOnly: true
+        factura_id:
+          type: integer
+          writeOnly: true
+        notas:
+          type: string
+      required:
+      - factura_id
+      - transaccion_id
+    CrearPedido:
+      type: object
+      description: Serializer para crear pedidos desde el carrito
+      properties:
+        tipo_entrega:
+          $ref: '#/components/schemas/TipoEntregaEnum'
+        nombre_contacto:
+          type: string
+          maxLength: 100
+        email_contacto:
+          type: string
+          format: email
+          maxLength: 254
+        telefono_contacto:
+          type: string
+          maxLength: 20
+        direccion_entrega:
+          type: string
+          nullable: true
+        ciudad_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        region_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+      required:
+      - email_contacto
+      - nombre_contacto
+      - telefono_contacto
+      - tipo_entrega
+    CrearPedidoRequest:
+      type: object
+      description: Serializer para crear pedidos desde el carrito
+      properties:
+        tipo_entrega:
+          $ref: '#/components/schemas/TipoEntregaEnum'
+        nombre_contacto:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email_contacto:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        telefono_contacto:
+          type: string
+          minLength: 1
+          maxLength: 20
+        direccion_entrega:
+          type: string
+          nullable: true
+        ciudad_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        region_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+      required:
+      - email_contacto
+      - nombre_contacto
+      - telefono_contacto
+      - tipo_entrega
+    CustomTokenObtainPairRequest:
+      type: object
+      description: Serializador personalizado para el token JWT
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    EstadoNuevoEnum:
+      enum:
+      - pendiente
+      - pagado
+      - preparacion
+      - listo_retiro
+      - en_despacho
+      - entregado
+      - cancelado
+      type: string
+      description: |-
+        * `pendiente` - Pendiente de Pago
+        * `pagado` - Pagado
+        * `preparacion` - En Preparación
+        * `listo_retiro` - Listo para Retiro
+        * `en_despacho` - En Despacho
+        * `entregado` - Entregado
+        * `cancelado` - Cancelado
+    Etiqueta:
+      type: object
+      description: Serializer para el modelo Etiqueta
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 50
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - id
+      - nombre
+      - slug
+    EtiquetaRequest:
+      type: object
+      description: Serializer para el modelo Etiqueta
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 50
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - nombre
+      - slug
+    FacturaElectronica:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        pedido:
+          allOf:
+          - $ref: '#/components/schemas/PedidoDetail'
+          readOnly: true
+        numero_factura:
+          type: string
+          readOnly: true
+        fecha_emision:
+          type: string
+          format: date-time
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/FacturaElectronicaEstadoEnum'
+          readOnly: true
+        rut_emisor:
+          type: string
+          maxLength: 20
+        razon_social_emisor:
+          type: string
+          maxLength: 200
+        giro_emisor:
+          type: string
+          maxLength: 200
+        direccion_emisor:
+          type: string
+          maxLength: 200
+        rut_receptor:
+          type: string
+          maxLength: 20
+        razon_social_receptor:
+          type: string
+          maxLength: 200
+        giro_receptor:
+          type: string
+          maxLength: 200
+        direccion_receptor:
+          type: string
+          maxLength: 200
+        neto:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        iva:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        xml_factura:
+          type: string
+          readOnly: true
+        pdf_factura:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+        track_id:
+          type: string
+          readOnly: true
+        respuesta_sii:
+          type: string
+          readOnly: true
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - direccion_emisor
+      - direccion_receptor
+      - estado
+      - fecha_actualizacion
+      - fecha_creacion
+      - fecha_emision
+      - giro_emisor
+      - id
+      - iva
+      - neto
+      - numero_factura
+      - pdf_factura
+      - pedido
+      - razon_social_emisor
+      - razon_social_receptor
+      - respuesta_sii
+      - rut_emisor
+      - rut_receptor
+      - total
+      - track_id
+      - xml_factura
+    FacturaElectronicaEstadoEnum:
+      enum:
+      - pendiente
+      - emitida
+      - enviada
+      - aceptada
+      - rechazada
+      type: string
+      description: |-
+        * `pendiente` - Pendiente de Emisión
+        * `emitida` - Emitida
+        * `enviada` - Enviada al SII
+        * `aceptada` - Aceptada por SII
+        * `rechazada` - Rechazada por SII
+    FacturaElectronicaRequest:
+      type: object
+      properties:
+        pedido_id:
+          type: integer
+          writeOnly: true
+        fecha_emision:
+          type: string
+          format: date-time
+        rut_emisor:
+          type: string
+          minLength: 1
+          maxLength: 20
+        razon_social_emisor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        giro_emisor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        direccion_emisor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        rut_receptor:
+          type: string
+          minLength: 1
+          maxLength: 20
+        razon_social_receptor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        giro_receptor:
+          type: string
+          maxLength: 200
+        direccion_receptor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        neto:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        iva:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - direccion_emisor
+      - direccion_receptor
+      - fecha_emision
+      - giro_emisor
+      - iva
+      - neto
+      - pedido_id
+      - razon_social_emisor
+      - razon_social_receptor
+      - rut_emisor
+      - rut_receptor
+      - total
+    ImagenProducto:
+      type: object
+      description: Serializer para el modelo ImagenProducto
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        imagen:
+          type: string
+          format: uri
+        es_principal:
+          type: boolean
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - imagen
+    ImagenProductoRequest:
+      type: object
+      description: Serializer para el modelo ImagenProducto
+      properties:
+        imagen:
+          type: string
+          format: binary
+        es_principal:
+          type: boolean
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - imagen
+    Marca:
+      type: object
+      description: Serializer para el modelo Marca
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        activo:
+          type: boolean
+      required:
+      - id
+      - nombre
+      - slug
+    MarcaRequest:
+      type: object
+      description: Serializer para el modelo Marca
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        logo:
+          type: string
+          format: binary
+          nullable: true
+        activo:
+          type: boolean
+      required:
+      - nombre
+      - slug
+    MovimientoStock:
+      type: object
+      description: Serializer para el modelo MovimientoStock
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
+        tipo:
+          $ref: '#/components/schemas/MovimientoStockTipoEnum'
+        cantidad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        motivo:
+          type: string
+          maxLength: 100
+        usuario:
+          type: string
+          readOnly: true
+      required:
+      - cantidad
+      - fecha
+      - id
+      - motivo
+      - tipo
+      - usuario
+    MovimientoStockRequest:
+      type: object
+      description: Serializer para el modelo MovimientoStock
+      properties:
+        tipo:
+          $ref: '#/components/schemas/MovimientoStockTipoEnum'
+        cantidad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        motivo:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - cantidad
+      - motivo
+      - tipo
+    MovimientoStockTipoEnum:
+      enum:
+      - entrada
+      - salida
+      type: string
+      description: |-
+        * `entrada` - Entrada
+        * `salida` - Salida
+    Notificacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        destinatario:
+          type: integer
+          readOnly: true
+        plantilla:
+          type: integer
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/NotificacionEstadoEnum'
+          readOnly: true
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_envio:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        fecha_lectura:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        datos_contexto:
+          readOnly: true
+      required:
+      - datos_contexto
+      - destinatario
+      - estado
+      - fecha_creacion
+      - fecha_envio
+      - fecha_lectura
+      - id
+      - plantilla
+    NotificacionEstadoEnum:
+      enum:
+      - pendiente
+      - enviada
+      - leida
+      - fallida
+      type: string
+      description: |-
+        * `pendiente` - Pendiente
+        * `enviada` - Enviada
+        * `leida` - Leída
+        * `fallida` - Fallida
+    PatchedAtributoProductoRequest:
+      type: object
+      description: Serializer para el modelo AtributoProducto
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        tipo:
+          $ref: '#/components/schemas/AtributoProductoTipoEnum'
+        opciones:
+          type: string
+          description: Opciones separadas por comas para tipo selección
+    PatchedCategoriaRequest:
+      type: object
+      description: Serializer para el modelo Categoria
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        parent:
+          type: integer
+          nullable: true
+        activo:
+          type: boolean
+    PatchedConciliacionPagoRequest:
+      type: object
+      properties:
+        transaccion_id:
+          type: integer
+          writeOnly: true
+        factura_id:
+          type: integer
+          writeOnly: true
+        notas:
+          type: string
+    PatchedEtiquetaRequest:
+      type: object
+      description: Serializer para el modelo Etiqueta
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 50
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+    PatchedFacturaElectronicaRequest:
+      type: object
+      properties:
+        pedido_id:
+          type: integer
+          writeOnly: true
+        fecha_emision:
+          type: string
+          format: date-time
+        rut_emisor:
+          type: string
+          minLength: 1
+          maxLength: 20
+        razon_social_emisor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        giro_emisor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        direccion_emisor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        rut_receptor:
+          type: string
+          minLength: 1
+          maxLength: 20
+        razon_social_receptor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        giro_receptor:
+          type: string
+          maxLength: 200
+        direccion_receptor:
+          type: string
+          minLength: 1
+          maxLength: 200
+        neto:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        iva:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+    PatchedImagenProductoRequest:
+      type: object
+      description: Serializer para el modelo ImagenProducto
+      properties:
+        imagen:
+          type: string
+          format: binary
+        es_principal:
+          type: boolean
+        orden:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+    PatchedMarcaRequest:
+      type: object
+      description: Serializer para el modelo Marca
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        logo:
+          type: string
+          format: binary
+          nullable: true
+        activo:
+          type: boolean
+    PatchedPedidoDetailRequest:
+      type: object
+      description: Serializer para detalles del pedido
+      properties:
+        estado:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        tipo_entrega:
+          $ref: '#/components/schemas/TipoEntregaEnum'
+        nombre_contacto:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email_contacto:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        telefono_contacto:
+          type: string
+          minLength: 1
+          maxLength: 20
+        direccion_entrega:
+          type: string
+          nullable: true
+        ciudad_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        region_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        costo_envio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        metodo_pago:
+          type: string
+          maxLength: 50
+        referencia_pago:
+          type: string
+          maxLength: 100
+        notas:
+          type: string
+    PatchedPreferenciasNotificacionRequest:
+      type: object
+      properties:
+        email_enabled:
+          type: boolean
+        push_enabled:
+          type: boolean
+        platform_enabled:
+          type: boolean
+    PatchedProductoCreateUpdateRequest:
+      type: object
+      description: Serializer para crear y actualizar productos
+      properties:
+        codigo:
+          type: string
+          minLength: 1
+          maxLength: 50
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+          minLength: 1
+        categoria:
+          type: integer
+        marca:
+          type: integer
+        etiquetas:
+          type: array
+          items:
+            type: integer
+        precio_base:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        precio_venta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock_actual:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_minimo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_maximo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        atributos_json: {}
+        activo:
+          type: boolean
+        destacado:
+          type: boolean
+        imagenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImagenProductoRequest'
+    PatchedSucursalRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        direccion:
+          type: string
+          minLength: 1
+        ciudad:
+          type: string
+          minLength: 1
+          maxLength: 100
+        region:
+          type: string
+          minLength: 1
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        activo:
+          type: boolean
+    PatchedTransaccionMercadoPagoRequest:
+      type: object
+      properties:
+        pedido_id:
+          type: integer
+          writeOnly: true
+        datos_adicionales: {}
+    PatchedUserUpdateRequest:
+      type: object
+      description: Serializador para actualizar usuarios
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        current_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+    PedidoDetail:
+      type: object
+      description: Serializer para detalles del pedido
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        numero:
+          type: string
+          readOnly: true
+        usuario:
+          type: string
+          readOnly: true
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+        estado:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        tipo_entrega:
+          $ref: '#/components/schemas/TipoEntregaEnum'
+        nombre_contacto:
+          type: string
+          maxLength: 100
+        email_contacto:
+          type: string
+          format: email
+          maxLength: 254
+        telefono_contacto:
+          type: string
+          maxLength: 20
+        direccion_entrega:
+          type: string
+          nullable: true
+        ciudad_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        region_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        costo_envio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        metodo_pago:
+          type: string
+          maxLength: 50
+        referencia_pago:
+          type: string
+          maxLength: 100
+        notas:
+          type: string
+        fecha_pago:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        fecha_preparacion:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        fecha_despacho:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        fecha_entrega:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PedidoItem'
+          readOnly: true
+        cambios:
+          type: array
+          items:
+            $ref: '#/components/schemas/CambioPedido'
+          readOnly: true
+      required:
+      - cambios
+      - email_contacto
+      - fecha_actualizacion
+      - fecha_creacion
+      - fecha_despacho
+      - fecha_entrega
+      - fecha_pago
+      - fecha_preparacion
+      - id
+      - items
+      - nombre_contacto
+      - numero
+      - subtotal
+      - telefono_contacto
+      - tipo_entrega
+      - total
+      - usuario
+    PedidoDetailRequest:
+      type: object
+      description: Serializer para detalles del pedido
+      properties:
+        estado:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        tipo_entrega:
+          $ref: '#/components/schemas/TipoEntregaEnum'
+        nombre_contacto:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email_contacto:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        telefono_contacto:
+          type: string
+          minLength: 1
+          maxLength: 20
+        direccion_entrega:
+          type: string
+          nullable: true
+        ciudad_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        region_entrega:
+          type: string
+          nullable: true
+          maxLength: 100
+        costo_envio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        metodo_pago:
+          type: string
+          maxLength: 50
+        referencia_pago:
+          type: string
+          maxLength: 100
+        notas:
+          type: string
+      required:
+      - email_contacto
+      - nombre_contacto
+      - telefono_contacto
+      - tipo_entrega
+    PedidoItem:
+      type: object
+      description: Serializer para items del pedido
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        producto:
+          allOf:
+          - $ref: '#/components/schemas/ProductoList'
+          readOnly: true
+        cantidad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        precio_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - cantidad
+      - id
+      - precio_unitario
+      - producto
+      - subtotal
+    PedidoItemRequest:
+      type: object
+      description: Serializer para items del pedido
+      properties:
+        cantidad:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - cantidad
+    PedidoList:
+      type: object
+      description: Serializer para listar pedidos
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        numero:
+          type: string
+          maxLength: 50
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        estado:
+          $ref: '#/components/schemas/EstadoNuevoEnum'
+        tipo_entrega:
+          $ref: '#/components/schemas/TipoEntregaEnum'
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        nombre_contacto:
+          type: string
+          maxLength: 100
+      required:
+      - fecha_creacion
+      - id
+      - nombre_contacto
+      - numero
+      - tipo_entrega
+      - total
+    PlantillaNotificacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/PlantillaNotificacionTipoEnum'
+          readOnly: true
+        asunto_email:
+          type: string
+          readOnly: true
+        contenido_email:
+          type: string
+          readOnly: true
+        contenido_push:
+          type: string
+          readOnly: true
+        contenido_platform:
+          type: string
+          readOnly: true
+      required:
+      - asunto_email
+      - contenido_email
+      - contenido_platform
+      - contenido_push
+      - id
+      - nombre
+      - tipo
+    PlantillaNotificacionTipoEnum:
+      enum:
+      - consulta
+      - pedido
+      - pago
+      - preparacion
+      type: string
+      description: |-
+        * `consulta` - Consulta de Producto
+        * `pedido` - Estado de Pedido
+        * `pago` - Validación de Pago
+        * `preparacion` - Preparación de Pedido
+    PreferenciasNotificacion:
+      type: object
+      properties:
+        email_enabled:
+          type: boolean
+        push_enabled:
+          type: boolean
+        platform_enabled:
+          type: boolean
+    PreferenciasNotificacionRequest:
+      type: object
+      properties:
+        email_enabled:
+          type: boolean
+        push_enabled:
+          type: boolean
+        platform_enabled:
+          type: boolean
+    ProductoCreateUpdate:
+      type: object
+      description: Serializer para crear y actualizar productos
+      properties:
+        codigo:
+          type: string
+          maxLength: 50
+        nombre:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        categoria:
+          type: integer
+        marca:
+          type: integer
+        etiquetas:
+          type: array
+          items:
+            type: integer
+        precio_base:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        precio_venta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock_actual:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_minimo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_maximo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        atributos_json: {}
+        activo:
+          type: boolean
+        destacado:
+          type: boolean
+        imagenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImagenProducto'
+      required:
+      - categoria
+      - codigo
+      - descripcion
+      - marca
+      - nombre
+      - precio_base
+      - precio_venta
+      - slug
+    ProductoCreateUpdateRequest:
+      type: object
+      description: Serializer para crear y actualizar productos
+      properties:
+        codigo:
+          type: string
+          minLength: 1
+          maxLength: 50
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+          minLength: 1
+        categoria:
+          type: integer
+        marca:
+          type: integer
+        etiquetas:
+          type: array
+          items:
+            type: integer
+        precio_base:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        precio_venta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock_actual:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_minimo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_maximo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        atributos_json: {}
+        activo:
+          type: boolean
+        destacado:
+          type: boolean
+        imagenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImagenProductoRequest'
+      required:
+      - categoria
+      - codigo
+      - descripcion
+      - marca
+      - nombre
+      - precio_base
+      - precio_venta
+      - slug
+    ProductoDetail:
+      type: object
+      description: Serializer para detalles de producto
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        codigo:
+          type: string
+          maxLength: 50
+        nombre:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        categoria:
+          $ref: '#/components/schemas/Categoria'
+        marca:
+          $ref: '#/components/schemas/Marca'
+        etiquetas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Etiqueta'
+        precio_base:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        precio_venta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock_actual:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_minimo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        stock_maximo:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        atributos_json: {}
+        valores_atributos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValorAtributoProducto'
+          readOnly: true
+        activo:
+          type: boolean
+        destacado:
+          type: boolean
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+        imagenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImagenProducto'
+        movimientos:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovimientoStock'
+          readOnly: true
+        necesita_reposicion:
+          type: string
+          readOnly: true
+      required:
+      - categoria
+      - codigo
+      - descripcion
+      - etiquetas
+      - fecha_actualizacion
+      - fecha_creacion
+      - id
+      - imagenes
+      - marca
+      - movimientos
+      - necesita_reposicion
+      - nombre
+      - precio_base
+      - precio_venta
+      - slug
+      - valores_atributos
+    ProductoList:
+      type: object
+      description: Serializer para listar productos
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        codigo:
+          type: string
+          maxLength: 50
+        nombre:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        categoria:
+          type: string
+          readOnly: true
+        marca:
+          type: string
+          readOnly: true
+        precio_venta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock_actual:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        imagen_principal:
+          type: string
+          readOnly: true
+        destacado:
+          type: boolean
+      required:
+      - categoria
+      - codigo
+      - id
+      - imagen_principal
+      - marca
+      - nombre
+      - precio_venta
+      - slug
+    ProductoListRequest:
+      type: object
+      description: Serializer para listar productos
+      properties:
+        codigo:
+          type: string
+          minLength: 1
+          maxLength: 50
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        precio_venta:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock_actual:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        destacado:
+          type: boolean
+      required:
+      - codigo
+      - nombre
+      - precio_venta
+      - slug
+    RolEnum:
+      enum:
+      - vendedor
+      - bodeguero
+      - contador
+      type: string
+      description: |-
+        * `vendedor` - vendedor
+        * `bodeguero` - bodeguero
+        * `contador` - contador
+    StaffRegistration:
+      type: object
+      description: Serializador para el registro de personal (vendedores, bodegueros,
+        contadores)
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        is_active:
+          type: boolean
+          readOnly: true
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
+        debe_cambiar_password:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - debe_cambiar_password
+      - email
+      - id
+      - is_active
+      - updated_at
+      - username
+    StaffRegistrationRequest:
+      type: object
+      description: Serializador para el registro de personal (vendedores, bodegueros,
+        contadores)
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        rol:
+          allOf:
+          - $ref: '#/components/schemas/RolEnum'
+          writeOnly: true
+      required:
+      - email
+      - rol
+      - username
+    Sucursal:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 100
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        activo:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - ciudad
+      - created_at
+      - direccion
+      - id
+      - nombre
+      - region
+      - updated_at
+    SucursalRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        direccion:
+          type: string
+          minLength: 1
+        ciudad:
+          type: string
+          minLength: 1
+          maxLength: 100
+        region:
+          type: string
+          minLength: 1
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        activo:
+          type: boolean
+      required:
+      - ciudad
+      - direccion
+      - nombre
+      - region
+    TipoEntregaEnum:
+      enum:
+      - retiro
+      - despacho
+      type: string
+      description: |-
+        * `retiro` - Retiro en Tienda
+        * `despacho` - Despacho a Domicilio
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    TransaccionMercadoPago:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        pedido:
+          allOf:
+          - $ref: '#/components/schemas/PedidoDetail'
+          readOnly: true
+        preference_id:
+          type: string
+          readOnly: true
+        payment_id:
+          type: string
+          readOnly: true
+          nullable: true
+        merchant_order_id:
+          type: string
+          readOnly: true
+          nullable: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/TransaccionMercadoPagoEstadoEnum'
+          readOnly: true
+        monto:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+        datos_adicionales: {}
+      required:
+      - estado
+      - fecha_actualizacion
+      - fecha_creacion
+      - id
+      - merchant_order_id
+      - monto
+      - payment_id
+      - pedido
+      - preference_id
+    TransaccionMercadoPagoEstadoEnum:
+      enum:
+      - pending
+      - approved
+      - authorized
+      - in_process
+      - in_mediation
+      - rejected
+      - cancelled
+      - refunded
+      - charged_back
+      type: string
+      description: |-
+        * `pending` - Pendiente
+        * `approved` - Aprobado
+        * `authorized` - Autorizado
+        * `in_process` - En Proceso
+        * `in_mediation` - En Mediación
+        * `rejected` - Rechazado
+        * `cancelled` - Cancelado
+        * `refunded` - Reembolsado
+        * `charged_back` - Contracargo
+    TransaccionMercadoPagoRequest:
+      type: object
+      properties:
+        pedido_id:
+          type: integer
+          writeOnly: true
+        datos_adicionales: {}
+      required:
+      - pedido_id
+    User:
+      type: object
+      description: Serializador base para el modelo de usuario
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        rol:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
+        debe_cambiar_password:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - debe_cambiar_password
+      - email
+      - id
+      - is_active
+      - rol
+      - updated_at
+      - username
+    UserRequest:
+      type: object
+      description: Serializador base para el modelo de usuario
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+      required:
+      - email
+      - username
+    UserUpdate:
+      type: object
+      description: Serializador para actualizar usuarios
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        rol:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
+        debe_cambiar_password:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - debe_cambiar_password
+      - email
+      - id
+      - is_active
+      - rol
+      - updated_at
+      - username
+    UserUpdateRequest:
+      type: object
+      description: Serializador para actualizar usuarios
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Dirección de correo electrónico
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          maxLength: 20
+        direccion:
+          type: string
+        ciudad:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        rut:
+          type: string
+          maxLength: 12
+        fecha_nacimiento:
+          type: string
+          format: date
+          nullable: true
+        es_cliente:
+          type: boolean
+        suscrito_newsletter:
+          type: boolean
+        limite_credito:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          description: Límite de crédito para compras a plazo
+        current_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - username
+    ValorAtributoProducto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        atributo:
+          type: integer
+        nombre_atributo:
+          type: string
+          readOnly: true
+        tipo_atributo:
+          type: string
+          readOnly: true
+        valor:
+          type: string
+          maxLength: 255
+      required:
+      - atributo
+      - id
+      - nombre_atributo
+      - tipo_atributo
+      - valor
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

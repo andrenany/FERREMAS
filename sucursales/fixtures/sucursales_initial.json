@@ -1,0 +1,62 @@
+[
+    {
+        "model": "sucursales.sucursal",
+        "pk": 1,
+        "fields": {
+            "nombre": "FERREMAS Santiago Centro",
+            "direccion": "Av. Libertador Bernardo O'Higgins 123",
+            "ciudad": "Santiago",
+            "region": "Metropolitana",
+            "telefono": "+56 2 2345 6789",
+            "email": "santiago@ferremas.cl",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "sucursales.sucursal",
+        "pk": 2,
+        "fields": {
+            "nombre": "FERREMAS Puerto Montt",
+            "direccion": "Calle Los Alerces 456",
+            "ciudad": "Puerto Montt",
+            "region": "Los Lagos",
+            "telefono": "+56 65 2789 1234",
+            "email": "puertomontt@ferremas.cl",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "sucursales.sucursal",
+        "pk": 3,
+        "fields": {
+            "nombre": "FERREMAS Valdivia",
+            "direccion": "Av. Picarte 789",
+            "ciudad": "Valdivia",
+            "region": "Los Ríos",
+            "telefono": "+56 63 2456 7890",
+            "email": "valdivia@ferremas.cl",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "sucursales.sucursal",
+        "pk": 4,
+        "fields": {
+            "nombre": "FERREMAS Antofagasta",
+            "direccion": "Av. Argentina 1011",
+            "ciudad": "Antofagasta",
+            "region": "Antofagasta",
+            "telefono": "+56 55 2678 9012",
+            "email": "antofagasta@ferremas.cl",
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z"
+        }
+    }
+] 

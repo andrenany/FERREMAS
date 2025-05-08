@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Actualización de Pedido - FERREMAS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .estado {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .detalles {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Actualización de tu Pedido</h1>
+            <p>Pedido #{{ pedido.numero }}</p>
+        </div>
+        
+        <div class="content">
+            <p>Estimado/a {{ usuario.get_full_name }},</p>
+            
+            <p>Tu pedido ha sido actualizado al estado: <span class="estado">{{ pedido.get_estado_display }}</span></p>
+            
+            <div class="detalles">
+                <h3>Detalles del Pedido:</h3>
+                <p><strong>Fecha de creación:</strong> {{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                <p><strong>Tipo de entrega:</strong> {{ pedido.get_tipo_entrega_display }}</p>
+                <p><strong>Total:</strong> ${{ pedido.total }}</p>
+                
+                {% if pedido.tipo_entrega == 'despacho' %}
+                <p><strong>Dirección de entrega:</strong><br>
+                {{ pedido.direccion_entrega }}<br>
+                {{ pedido.ciudad_entrega }}, {{ pedido.region_entrega }}</p>
+                {% endif %}
+            </div>
+            
+            {% if pedido.estado == 'pagado' %}
+            <p>Hemos recibido tu pago y comenzaremos a preparar tu pedido.</p>
+            {% elif pedido.estado == 'preparacion' %}
+            <p>Tu pedido está siendo preparado en nuestro almacén.</p>
+            {% elif pedido.estado == 'listo_retiro' %}
+            <p>Tu pedido está listo para ser retirado en nuestra tienda.</p>
+            {% elif pedido.estado == 'en_despacho' %}
+            <p>Tu pedido está en camino a la dirección indicada.</p>
+            {% elif pedido.estado == 'entregado' %}
+            <p>Tu pedido ha sido entregado exitosamente.</p>
+            {% elif pedido.estado == 'cancelado' %}
+            <p>Tu pedido ha sido cancelado.</p>
+            {% endif %}
+            
+            {% if pedido.notas %}
+            <p><strong>Notas adicionales:</strong><br>
+            {{ pedido.notas }}</p>
+            {% endif %}
+            
+            <p>Para ver más detalles de tu pedido, ingresa a tu cuenta en nuestra plataforma.</p>
+        </div>
+        
+        <div class="footer">
+            <p>Este es un mensaje automático, por favor no responder.<br>
+            FERREMAS - Ferretería y Materiales de Construcción</p>
+        </div>
+    </div>
+</body>
+</html> 

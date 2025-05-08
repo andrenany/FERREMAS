@@ -1,0 +1,128 @@
+[
+    {
+        "model": "productos.producto",
+        "pk": 101,
+        "fields": {
+            "codigo": "ST-M16",
+            "nombre": "Martillo de Acero 16oz",
+            "slug": "martillo-acero-16oz-stanley",
+            "descripcion": "Martillo de acero profesional Stanley de 16oz",
+            "categoria": 1,
+            "marca": 1,
+            "precio_base": "10990.00",
+            "precio_venta": "12990.00",
+            "stock_actual": 50,
+            "stock_minimo": 10,
+            "stock_maximo": 100,
+            "activo": true,
+            "destacado": false,
+            "fecha_creacion": "2024-05-07T00:00:00Z",
+            "fecha_actualizacion": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.producto",
+        "pk": 102,
+        "fields": {
+            "codigo": "BO-DP2",
+            "nombre": "Destornillador Phillips #2",
+            "slug": "destornillador-phillips-2-bosch",
+            "descripcion": "Destornillador Phillips #2 profesional Bosch",
+            "categoria": 1,
+            "marca": 2,
+            "precio_base": "4990.00",
+            "precio_venta": "5990.00",
+            "stock_actual": 120,
+            "stock_minimo": 20,
+            "stock_maximo": 200,
+            "activo": true,
+            "destacado": false,
+            "fecha_creacion": "2024-05-07T00:00:00Z",
+            "fecha_actualizacion": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.producto",
+        "pk": 201,
+        "fields": {
+            "codigo": "BO-TP7",
+            "nombre": "Taladro Percutor 750W",
+            "slug": "taladro-percutor-750w-bosch",
+            "descripcion": "Taladro percutor Bosch profesional de 750W",
+            "categoria": 2,
+            "marca": 2,
+            "precio_base": "79990.00",
+            "precio_venta": "89990.00",
+            "stock_actual": 20,
+            "stock_minimo": 5,
+            "stock_maximo": 50,
+            "activo": true,
+            "destacado": true,
+            "fecha_creacion": "2024-05-07T00:00:00Z",
+            "fecha_actualizacion": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.producto",
+        "pk": 301,
+        "fields": {
+            "codigo": "PO-C25",
+            "nombre": "Cemento Polpaico 25kg",
+            "slug": "cemento-polpaico-25kg",
+            "descripcion": "Saco de cemento Polpaico de 25kg",
+            "categoria": 3,
+            "marca": 4,
+            "precio_base": "7990.00",
+            "precio_venta": "8990.00",
+            "stock_actual": 200,
+            "stock_minimo": 50,
+            "stock_maximo": 500,
+            "activo": true,
+            "destacado": false,
+            "fecha_creacion": "2024-05-07T00:00:00Z",
+            "fecha_actualizacion": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.producto",
+        "pk": 401,
+        "fields": {
+            "codigo": "TR-PL4",
+            "nombre": "Pintura Latex Blanco 4L",
+            "slug": "pintura-latex-blanco-4l-tricolor",
+            "descripcion": "Pintura látex blanca Tricolor de 4 litros",
+            "categoria": 4,
+            "marca": 6,
+            "precio_base": "17990.00",
+            "precio_venta": "19990.00",
+            "stock_actual": 40,
+            "stock_minimo": 10,
+            "stock_maximo": 100,
+            "activo": true,
+            "destacado": false,
+            "fecha_creacion": "2024-05-07T00:00:00Z",
+            "fecha_actualizacion": "2024-05-07T00:00:00Z"
+        }
+    },
+    {
+        "model": "productos.producto",
+        "pk": 501,
+        "fields": {
+            "codigo": "3M-CS1",
+            "nombre": "Casco de Seguridad",
+            "slug": "casco-seguridad-3m",
+            "descripcion": "Casco de seguridad profesional 3M",
+            "categoria": 5,
+            "marca": 7,
+            "precio_base": "8990.00",
+            "precio_venta": "9990.00",
+            "stock_actual": 80,
+            "stock_minimo": 20,
+            "stock_maximo": 150,
+            "activo": true,
+            "destacado": false,
+            "fecha_creacion": "2024-05-07T00:00:00Z",
+            "fecha_actualizacion": "2024-05-07T00:00:00Z"
+        }
+    }
+] 

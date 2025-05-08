@@ -1,0 +1,98 @@
+openapi: 3.0.3
+info:
+  title: API de FERREMAS
+  version: 1.0.0
+  description: API para la gestión de productos, inventario y ventas de FERREMAS
+servers:
+  - url: http://127.0.0.1:8000/api
+    description: Servidor de desarrollo
+paths:
+  /productos/:
+    get:
+      tags:
+        - productos
+      summary: Lista todos los productos
+      operationId: listProductos
+      responses:
+        '200':
+          description: Lista de productos obtenida exitosamente
+    post:
+      tags:
+        - productos
+      summary: Crea un nuevo producto
+      operationId: createProducto
+      responses:
+        '201':
+          description: Producto creado exitosamente
+  
+  /sucursales/:
+    get:
+      tags:
+        - sucursales
+      summary: Lista todas las sucursales
+      operationId: listSucursales
+      responses:
+        '200':
+          description: Lista de sucursales obtenida exitosamente
+  
+  /auth/login/:
+    post:
+      tags:
+        - autenticacion
+      summary: Iniciar sesión
+      operationId: login
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: Token de acceso JWT
+                  refresh:
+                    type: string
+                    description: Token de actualización JWT
+  
+  /pedidos/:
+    get:
+      tags:
+        - pedidos
+      summary: Lista todos los pedidos
+      operationId: listPedidos
+      responses:
+        '200':
+          description: Lista de pedidos obtenida exitosamente
+  
+  /pagos/:
+    get:
+      tags:
+        - pagos
+      summary: Lista todos los pagos
+      operationId: listPagos
+      responses:
+        '200':
+          description: Lista de pagos obtenida exitosamente
+  
+  /notificaciones/:
+    get:
+      tags:
+        - notificaciones
+      summary: Lista todas las notificaciones
+      operationId: listNotificaciones
+      responses:
+        '200':
+          description: Lista de notificaciones obtenida exitosamente
+
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT de autenticación
+
+security:
+  - Bearer: [] 

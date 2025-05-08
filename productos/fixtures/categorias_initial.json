@@ -1,0 +1,87 @@
+[
+    {
+        "model": "productos.categoria",
+        "pk": 1,
+        "fields": {
+            "nombre": "Herramientas Manuales",
+            "slug": "herramientas-manuales",
+            "descripcion": "Herramientas manuales para trabajo profesional",
+            "parent": null,
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z",
+            "lft": 1,
+            "rght": 2,
+            "tree_id": 1,
+            "level": 0
+        }
+    },
+    {
+        "model": "productos.categoria",
+        "pk": 2,
+        "fields": {
+            "nombre": "Herramientas Eléctricas",
+            "slug": "herramientas-electricas",
+            "descripcion": "Herramientas eléctricas profesionales",
+            "parent": null,
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z",
+            "lft": 1,
+            "rght": 2,
+            "tree_id": 2,
+            "level": 0
+        }
+    },
+    {
+        "model": "productos.categoria",
+        "pk": 3,
+        "fields": {
+            "nombre": "Materiales de Construcción",
+            "slug": "materiales-construccion",
+            "descripcion": "Materiales básicos para construcción",
+            "parent": null,
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z",
+            "lft": 1,
+            "rght": 2,
+            "tree_id": 3,
+            "level": 0
+        }
+    },
+    {
+        "model": "productos.categoria",
+        "pk": 4,
+        "fields": {
+            "nombre": "Pinturas y Acabados",
+            "slug": "pinturas-acabados",
+            "descripcion": "Pinturas y productos para acabados",
+            "parent": null,
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z",
+            "lft": 1,
+            "rght": 2,
+            "tree_id": 4,
+            "level": 0
+        }
+    },
+    {
+        "model": "productos.categoria",
+        "pk": 5,
+        "fields": {
+            "nombre": "Equipos de Seguridad",
+            "slug": "equipos-seguridad",
+            "descripcion": "Equipos de protección personal",
+            "parent": null,
+            "activo": true,
+            "created_at": "2024-05-07T00:00:00Z",
+            "updated_at": "2024-05-07T00:00:00Z",
+            "lft": 1,
+            "rght": 2,
+            "tree_id": 5,
+            "level": 0
+        }
+    }
+] 
