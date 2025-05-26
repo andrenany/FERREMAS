@@ -1,10 +1,13 @@
+import logging
+logger = logging.getLogger(__name__)
+
 from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from .models import Carrito, CarritoItem, Pedido, PedidoItem
+from .models import Carrito, CarritoItem, Pedido, PedidoItem, EstadoPedido
 from .serializers import (
     CarritoSerializer, CarritoItemSerializer,
     PedidoListSerializer, PedidoDetailSerializer,
@@ -12,205 +15,208 @@ from .serializers import (
 )
 from .filters import PedidoFilter
 from .permissions import PuedeGestionarPedido
+from productos.models import Producto as ProductoModel
+from django.db import transaction
+from decimal import Decimal
 
-class CarritoViewSet(mixins.RetrieveModelMixin,
+class CarritoViewSet(mixins.ListModelMixin,
+                    mixins.RetrieveModelMixin,
                     mixins.DestroyModelMixin,
                     viewsets.GenericViewSet):
     """ViewSet para gestionar el carrito de compras"""
     serializer_class = CarritoSerializer
     permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        return Carrito.objects.filter(usuario=self.request.user)
-    
-    def get_object(self):
-        """Obtiene o crea el carrito del usuario"""
-        carrito, _ = Carrito.objects.get_or_create(usuario=self.request.user)
-        return carrito
-    
-    @extend_schema(
-        description="Agrega un producto al carrito",
-        request=CarritoItemSerializer,
-        responses={201: CarritoSerializer}
-    )
-    @action(detail=True, methods=['post'])
-    def agregar_producto(self, request):
-        """Agrega un producto al carrito"""
-        carrito = self.get_object()
-        serializer = CarritoItemSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            producto_id = serializer.validated_data['producto_id']
-            cantidad = serializer.validated_data.get('cantidad', 1)
-            
-            try:
-                item = carrito.agregar_producto(producto_id, cantidad)
-                return Response(
-                    self.get_serializer(carrito).data,
-                    status=status.HTTP_201_CREATED
-                )
-            except Exception as e:
-                return Response(
-                    {'error': str(e)},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @extend_schema(
-        description="Actualiza la cantidad de un producto en el carrito",
-        request=CarritoItemSerializer,
-        responses={200: CarritoSerializer}
-    )
-    @action(detail=True, methods=['put'])
-    def actualizar_cantidad(self, request):
-        """Actualiza la cantidad de un producto en el carrito"""
-        carrito = self.get_object()
-        serializer = CarritoItemSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            producto_id = serializer.validated_data['producto_id']
-            cantidad = serializer.validated_data['cantidad']
-            
-            try:
-                carrito.actualizar_cantidad(producto_id, cantidad)
-                return Response(self.get_serializer(carrito).data)
-            except Exception as e:
-                return Response(
-                    {'error': str(e)},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @extend_schema(
-        description="Limpia el carrito",
-        responses={204: None}
-    )
-    @action(detail=True, methods=['post'])
-    def limpiar(self, request):
-        """Elimina todos los productos del carrito"""
-        carrito = self.get_object()
-        carrito.limpiar()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
-class PedidoViewSet(viewsets.ModelViewSet):
-    """ViewSet para gestionar pedidos"""
-    permission_classes = [IsAuthenticated, PuedeGestionarPedido]
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = PedidoFilter
-    lookup_field = 'numero'
-    
     def get_queryset(self):
         user = self.request.user
-        if user.es_administrador() or user.es_vendedor():
-            return Pedido.objects.all()
-        return Pedido.objects.filter(usuario=user)
-    
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return PedidoListSerializer
-        elif self.action == 'create':
-            return CrearPedidoSerializer
-        elif self.action == 'actualizar_estado':
-            return ActualizarEstadoPedidoSerializer
-        return PedidoDetailSerializer
-    
-    def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
-    
-    @extend_schema(
-        description="Actualiza el estado de un pedido",
-        request=ActualizarEstadoPedidoSerializer,
-        responses={200: PedidoDetailSerializer}
-    )
-    @action(detail=True, methods=['post'])
-    def actualizar_estado(self, request, numero=None):
-        """Endpoint para actualizar el estado de un pedido"""
-        pedido = self.get_object()
-        serializer = self.get_serializer(pedido, data=request.data)
-        
-        if serializer.is_valid():
-            pedido = serializer.save()
-            return Response(
-                PedidoDetailSerializer(pedido).data
+        if not user.is_authenticated:
+            return Carrito.objects.none()
+        return Carrito.objects.filter(usuario=user)
+
+    def list(self, request, *args, **kwargs):
+        """Obtener o crear el carrito del usuario actual"""
+        try:
+            carrito, created = Carrito.objects.get_or_create(
+                usuario=request.user,
+                defaults={'total': 0}
             )
-        
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+            serializer = self.get_serializer(carrito)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        # Temporary test response
+        # return Response({"mensaje": "Respuesta de prueba exitosa", "items_test": []}, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        """Obtener un carrito específico por ID"""
+        return super().retrieve(request, *args, **kwargs)
+
+    @action(detail=True, methods=['PUT'])
+    def actualizar_cantidad(self, request, pk=None):
+        """Actualiza la cantidad de un producto en el carrito"""
+        carrito = self.get_object()
+        producto_id = request.data.get('producto_id')
+        cantidad = request.data.get('cantidad')
+
+        if not producto_id:
+            return Response(
+                {'error': 'producto_id es requerido'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            if cantidad == 0:
+                # Si la cantidad es 0, eliminar el item
+                CarritoItem.objects.filter(
+                    carrito=carrito,
+                    producto_id=producto_id
+                ).delete()
+            else:
+                # Actualizar o crear el item
+                item, created = CarritoItem.objects.get_or_create(
+                    carrito=carrito,
+                    producto_id=producto_id,
+                    defaults={'cantidad': cantidad, 'precio_unitario': 0}
+                )
+                if not created:
+                    item.cantidad = cantidad
+                    item.save()
+
+            # Actualizar totales del carrito
+            carrito.actualizar_totales()
+            
+            serializer = self.get_serializer(carrito)
+            return Response(serializer.data)
+            
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=False, methods=['POST'])
+    def add_item(self, request):
+        usuario = request.user
+        producto_id = request.data.get('producto_id')
+        cantidad = int(request.data.get('cantidad', 1))
+
+        if not producto_id:
+            return Response({'error': 'Falta producto_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            producto = ProductoModel.objects.get(id=producto_id)
+        except ProductoModel.DoesNotExist:
+            return Response({'error': 'Producto no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        carrito, _ = Carrito.objects.get_or_create(usuario=usuario)
+
+        item, creado = CarritoItem.objects.get_or_create(
+            carrito=carrito,
+            producto=producto,
+            defaults={'cantidad': cantidad, 'precio_unitario': producto.precio_venta}
         )
-    
-    @extend_schema(
-        description="Lista los pedidos del usuario actual",
-        responses={200: PedidoListSerializer(many=True)}
-    )
-    @action(detail=False, methods=['get'])
-    def mis_pedidos(self, request):
-        """Lista los pedidos del usuario autenticado"""
-        pedidos = Pedido.objects.filter(usuario=request.user)
-        page = self.paginate_queryset(pedidos)
-        
-        if page is not None:
-            serializer = PedidoListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        
-        serializer = PedidoListSerializer(pedidos, many=True)
-        return Response(serializer.data)
-    
-    @extend_schema(
-        description="Lista los pedidos pendientes de preparación",
-        responses={200: PedidoListSerializer(many=True)}
-    )
-    @action(detail=False, methods=['get'])
-    def pendientes_preparacion(self, request):
-        """Lista pedidos pagados pendientes de preparación"""
-        if not (request.user.es_administrador() or request.user.es_bodeguero()):
+
+        if not creado:
+            item.cantidad += cantidad
+            item.save()
+            
+        # Actualizar totales del carrito después de agregar/actualizar item
+        carrito.actualizar_totales()
+
+        # Serializar el carrito actualizado
+        serializer = self.get_serializer(carrito)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['POST'])
+    def crear_desde_carrito(self, request):
+        """Crea un Pedido a partir del carrito del usuario autenticado"""
+        usuario = request.user
+
+        try:
+            # 1. Obtener el carrito del usuario
+            carrito = Carrito.objects.get(usuario=usuario)
+            items_carrito = carrito.items.all()
+
+            if not items_carrito:
+                return Response(
+                    {'error': 'El carrito está vacío'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Usar una transacción para asegurar la atomicidad
+            with transaction.atomic():
+                # Calcular subtotal, IVA, descuento y total del pedido
+                subtotal_pedido = sum(item.subtotal for item in items_carrito)
+                iva_pedido = subtotal_pedido * Decimal('0.19')
+                descuento_pedido = 0 # Asumiendo descuento inicial de 0
+                total_pedido = subtotal_pedido + iva_pedido - descuento_pedido
+
+                # Obtener el estado inicial (ej. 'Pendiente'). Asegúrate de que este estado exista.
+                try:
+                    estado_inicial = EstadoPedido.objects.get(nombre='Pendiente') # CAMBIO: Busca tu estado inicial real aquí
+                except EstadoPedido.DoesNotExist:
+                    # Manejar el caso si el estado inicial no existe
+                    raise Exception("Estado inicial 'Pendiente' no encontrado. Asegúrate de crearlo.")
+
+                # 2. Crear el nuevo Pedido
+                # CAMBIO: Incluir subtotal, iva, descuento y estado inicial
+                pedido = Pedido.objects.create(
+                    cliente=usuario,
+                    subtotal=subtotal_pedido,
+                    iva=iva_pedido,
+                    descuento=descuento_pedido,
+                    total=total_pedido,
+                    estado=estado_inicial,
+                    # Asegúrate de copiar otros campos obligatorios del Pedido desde el carrito o request.data si es necesario
+                    # como tipo_entrega, direccion_entrega, nombre_contacto, email_contacto, telefono_contacto, sucursal, etc.
+                    # Por ahora, solo copiamos los totales.
+                    # Es posible que necesites pasar más datos desde el frontend o tener valores por defecto en el modelo Pedido.
+                )
+
+                # 3. Crear los PedidoItems a partir de los CarritoItems
+                pedido_items = []
+                for item_carrito in items_carrito:
+                    pedido_item = PedidoItem.objects.create(
+                        pedido=pedido,
+                        producto=item_carrito.producto,
+                        cantidad=item_carrito.cantidad,
+                        precio_unitario=item_carrito.precio_unitario
+                        # Asumimos que precio_unitario ya está guardado en CarritoItem
+                    )
+                    pedido_items.append(pedido_item)
+
+                # 4. Vaciar el carrito (opcional pero recomendado)
+                carrito.items.all().delete()
+                carrito.total = 0
+                carrito.save()
+
+            # 5. Serializar y devolver el Pedido creado (puedes usar un serializer de Pedido)
+            # Necesitarás un PedidoDetailSerializer o similar. Usaremos uno básico por ahora.
+            # Si tienes un PedidoSerializer definido, úsalo aquí.
+            # from .serializers import PedidoDetailSerializer # Descomenta si tienes uno
+            # serializer = PedidoDetailSerializer(pedido) # Descomenta si tienes uno
+
+            # Si no tienes un PedidoDetailSerializer, puedes devolver una respuesta simple de éxito.
             return Response(
-                {'error': 'No tiene permisos para ver esta información'},
-                status=status.HTTP_403_FORBIDDEN
+                {'mensaje': 'Pedido creado exitosamente', 'pedido_id': pedido.id},
+                status=status.HTTP_201_CREATED
             )
-        
-        pedidos = Pedido.objects.filter(estado='pagado')
-        serializer = PedidoListSerializer(pedidos, many=True)
-        return Response(serializer.data)
-    
-    @extend_schema(
-        description="Lista los pedidos listos para despacho",
-        responses={200: PedidoListSerializer(many=True)}
-    )
-    @action(detail=False, methods=['get'])
-    def listos_despacho(self, request):
-        """Lista pedidos listos para despacho"""
-        if not (request.user.es_administrador() or request.user.es_bodeguero()):
+
+        except Carrito.DoesNotExist:
             return Response(
-                {'error': 'No tiene permisos para ver esta información'},
-                status=status.HTTP_403_FORBIDDEN
+                {'error': 'Carrito no encontrado para el usuario'},
+                status=status.HTTP_404_NOT_FOUND
             )
-        
-        pedidos = Pedido.objects.filter(
-            estado='preparacion',
-            tipo_entrega='despacho'
-        )
-        serializer = PedidoListSerializer(pedidos, many=True)
-        return Response(serializer.data)
-    
-    @extend_schema(
-        description="Lista los pedidos listos para retiro",
-        responses={200: PedidoListSerializer(many=True)}
-    )
-    @action(detail=False, methods=['get'])
-    def listos_retiro(self, request):
-        """Lista pedidos listos para retiro en tienda"""
-        if not (request.user.es_administrador() or request.user.es_vendedor()):
+        except Exception as e:
+            logger.error(f"Error al crear pedido desde carrito: {e}", exc_info=True)
             return Response(
-                {'error': 'No tiene permisos para ver esta información'},
-                status=status.HTTP_403_FORBIDDEN
+                {'error': f'Error al procesar tu pedido: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        
-        pedidos = Pedido.objects.filter(
-            estado='preparacion',
-            tipo_entrega='retiro'
-        )
-        serializer = PedidoListSerializer(pedidos, many=True)
-        return Response(serializer.data) 
+
+class PedidoViewSet(viewsets.ModelViewSet):
+    # Add a simple indented line here to ensure a block exists
+    pass

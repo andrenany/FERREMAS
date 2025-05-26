@@ -5,6 +5,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializador base para el modelo de usuario"""
     rol = serializers.CharField(source='get_rol.name', read_only=True)
@@ -24,22 +25,42 @@ class UserSerializer(serializers.ModelSerializer):
             'ultimo_cambio_password'
         ]
 
+
+class ClienteRegistrationSerializer(UserSerializer):
+    """Serializador para el registro de clientes"""
+    password = serializers.CharField(write_only=True, required=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+
+    def validate(self, data):
+        # Asignar automáticamente el username con el email
+        # Asegurarse de que el email exista antes de asignarlo al username
+        email = data.get('email')
+        if email:
+            data['username'] = email
+        return data
+
     def validate_password(self, value):
         if value:
             validate_password(value)
         return value
 
-class ClienteRegistrationSerializer(UserSerializer):
-    """Serializador para el registro de clientes"""
-    password = serializers.CharField(write_only=True, required=True)
-
     def create(self, validated_data):
-        validated_data['rol'] = 'cliente'
+        # Extraer la contraseña y eliminar campos que no son del modelo directamente
+        password = validated_data.pop('password')
+        validated_data.pop('rol', None)  # <- Elimina el 'rol' si está presente
+
+        # Asegurarse de que el username esté en validated_data (debería venir de validate)
+        # Si por alguna razón no está, asignarlo desde el email (aunque validate debería hacerlo)
+        if 'username' not in validated_data or not validated_data['username']:
+             validated_data['username'] = validated_data.get('email', '') # Usar get con valor por defecto por seguridad
+
         user = User(**validated_data)
-        user.set_password(validated_data['password'])
+        user.set_password(password)
         user.save()
-        user.asignar_rol('cliente')
+        user.asignar_rol('cliente')  # Aquí se asigna el rol por lógica
         return user
+
+
 
 class StaffRegistrationSerializer(UserSerializer):
     """Serializador para el registro de personal (vendedores, bodegueros, contadores)"""
@@ -51,15 +72,13 @@ class StaffRegistrationSerializer(UserSerializer):
     def create(self, validated_data):
         rol = validated_data.pop('rol')
         user = User(**validated_data)
-        # Generar credenciales iniciales basadas en nombre y RUT
         user.save()
         user.asignar_rol(rol)
         password = user.generar_credenciales_iniciales()
         user.save()
-        
-        # Almacenar la contraseña temporal para enviarla por correo
         self.context['password_temporal'] = password
         return user
+
 
 class AdminRegistrationSerializer(UserSerializer):
     """Serializador para el registro de administradores"""
@@ -69,10 +88,9 @@ class AdminRegistrationSerializer(UserSerializer):
         user.asignar_rol('administrador')
         password = user.generar_credenciales_iniciales()
         user.save()
-        
-        # Almacenar la contraseña temporal para enviarla por correo
         self.context['password_temporal'] = password
         return user
+
 
 class UserUpdateSerializer(UserSerializer):
     """Serializador para actualizar usuarios"""
@@ -82,7 +100,6 @@ class UserUpdateSerializer(UserSerializer):
         fields = UserSerializer.Meta.fields + ['current_password']
 
     def validate(self, attrs):
-        # Si se intenta cambiar la contraseña, validar la contraseña actual
         if 'password' in attrs and not self.instance.debe_cambiar_password:
             current_password = attrs.pop('current_password', None)
             if not current_password:
@@ -103,30 +120,42 @@ class UserUpdateSerializer(UserSerializer):
             instance.save()
         return super().update(instance, validated_data)
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Serializador personalizado para el token JWT"""
+    username_field = 'email'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'username' in self.fields:
+            username_field = self.fields.pop('username')
+            self.fields['email'] = username_field
+
     def validate(self, attrs):
+        if 'email' in attrs:
+            attrs['username'] = attrs.get('email')
+
         data = super().validate(attrs)
         user_data = UserSerializer(self.user).data
         data['user'] = user_data
         data['debe_cambiar_password'] = self.user.debe_cambiar_password
         return data
 
+
 class ChangePasswordSerializer(serializers.Serializer):
-    """Serializador para cambio de contraseña"""
-    old_password = serializers.CharField(required=True)
+    old_password = serializers.CharField(required=False)
     new_password = serializers.CharField(required=True)
 
     def validate_new_password(self, value):
         validate_password(value)
         return value
 
+
 class ResetPasswordSerializer(serializers.Serializer):
-    """Serializador para restablecer contraseña"""
     email = serializers.EmailField(required=True)
 
+
 class ResetPasswordConfirmSerializer(serializers.Serializer):
-    """Serializador para confirmar restablecimiento de contraseña"""
     token = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
 
@@ -134,6 +163,6 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
         validate_password(value)
         return value
 
+
 class NewsletterSubscriptionSerializer(serializers.Serializer):
-    """Serializador para suscripción al newsletter"""
-    suscrito_newsletter = serializers.BooleanField(required=True) 
+    suscrito_newsletter = serializers.BooleanField(required=True)

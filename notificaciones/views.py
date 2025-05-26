@@ -1,3 +1,4 @@
+# notificaciones/views.py
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -20,6 +21,11 @@ class NotificacionViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        # Verificar si es una solicitud desde Swagger/OpenAPI
+        if getattr(self, 'swagger_fake_view', False):
+            # Retornar queryset vacío para documentación
+            return Notificacion.objects.none()
+        # Retornar queryset normal para solicitudes reales
         return Notificacion.objects.filter(destinatario=self.request.user)
 
     @action(detail=True, methods=['post'])
@@ -37,6 +43,11 @@ class PreferenciasNotificacionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        # Verificar si es una solicitud desde Swagger/OpenAPI
+        if getattr(self, 'swagger_fake_view', False):
+            # Retornar queryset vacío para documentación
+            return PreferenciasNotificacion.objects.none()
+        # Retornar queryset normal para solicitudes reales
         return PreferenciasNotificacion.objects.filter(usuario=self.request.user)
 
     def perform_create(self, serializer):

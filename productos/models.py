@@ -1,8 +1,8 @@
+# productos/models.py
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from django.core.validators import MinValueValidator
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.fields import JSONField
 
 User = get_user_model()
 
@@ -107,6 +107,7 @@ class ImagenProducto(models.Model):
     def __str__(self):
         return f"Imagen de {self.producto.nombre}"
 
+# Agregando los modelos faltantes
 class AtributoProducto(models.Model):
     """Modelo para definir atributos dinámicos de productos"""
     nombre = models.CharField(max_length=100)
@@ -122,6 +123,7 @@ class AtributoProducto(models.Model):
         return self.nombre
 
 class ValorAtributoProducto(models.Model):
+    """Modelo para los valores de atributos de cada producto"""
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='valores_atributos')
     atributo = models.ForeignKey(AtributoProducto, on_delete=models.CASCADE)
     valor = models.CharField(max_length=255)
@@ -134,8 +136,9 @@ class ValorAtributoProducto(models.Model):
         return f"{self.atributo.nombre}: {self.valor}"
 
 class Inventario(models.Model):
+    """Modelo para manejar el inventario por sucursal"""
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='inventarios')
-    sucursal = models.ForeignKey('sucursales.Sucursal', on_delete=models.CASCADE)
+    sucursal = models.ForeignKey('sucursales.Sucursal', on_delete=models.CASCADE, related_name='inventarios')
     stock_actual = models.PositiveIntegerField(default=0)
     stock_minimo = models.PositiveIntegerField(default=5)
     ubicacion_bodega = models.CharField(max_length=50, blank=True)
@@ -147,8 +150,18 @@ class Inventario(models.Model):
 
     def __str__(self):
         return f"{self.producto.nombre} - {self.sucursal.nombre}"
+        
+    @property
+    def estado_stock(self):
+        if self.stock_actual <= 0:
+            return "Sin stock"
+        elif self.stock_actual < self.stock_minimo:
+            return "Stock bajo"
+        else:
+            return "Disponible"
 
 class MovimientoInventario(models.Model):
+    """Modelo para registrar movimientos de inventario"""
     TIPO_MOVIMIENTO = [
         ('entrada', 'Entrada'),
         ('salida', 'Salida'),
@@ -183,4 +196,4 @@ class MovimientoStock(models.Model):
     def save(self, *args, **kwargs):
         """Sobrescribe el método save para actualizar el stock del producto"""
         super().save(*args, **kwargs)
-        self.producto.actualizar_stock(self.cantidad, self.tipo) 
+        self.producto.actualizar_stock(self.cantidad, self.tipo)

@@ -1,3 +1,4 @@
+# productos/serializers.py
 from rest_framework import serializers
 from mptt.models import MPTTModel
 from .models import (
@@ -31,9 +32,19 @@ class EtiquetaSerializer(serializers.ModelSerializer):
 
 class ImagenProductoSerializer(serializers.ModelSerializer):
     """Serializer para el modelo ImagenProducto"""
+    imagen_url = serializers.SerializerMethodField()
+
     class Meta:
         model = ImagenProducto
-        fields = ['id', 'imagen', 'es_principal', 'orden']
+        fields = ['id', 'imagen', 'es_principal', 'orden', 'imagen_url']
+        read_only_fields = ['imagen', 'imagen_url']
+
+    def get_imagen_url(self, obj):
+        """Obtiene la URL absoluta de la imagen"""
+        request = self.context.get('request')
+        if request is not None and obj.imagen:
+            return request.build_absolute_uri(obj.imagen.url)
+        return None
 
 class ValorAtributoProductoSerializer(serializers.ModelSerializer):
     nombre_atributo = serializers.CharField(source='atributo.nombre', read_only=True)
@@ -71,9 +82,11 @@ class ProductoListSerializer(serializers.ModelSerializer):
             'precio_venta', 'stock_actual', 'imagen_principal', 'destacado'
         ]
 
-    def get_imagen_principal(self, obj):
+    # Agregamos type hint para corregir el warning
+    def get_imagen_principal(self, obj) -> str:
+        """Obtiene la URL de la imagen principal del producto o None"""
         imagen = obj.imagenes.filter(es_principal=True).first()
-        if imagen:
+        if imagen and hasattr(self.context.get('request', None), 'build_absolute_uri'):
             return self.context['request'].build_absolute_uri(imagen.imagen.url)
         return None
 
@@ -157,4 +170,4 @@ class AtributoProductoSerializer(serializers.ModelSerializer):
     """Serializer para el modelo AtributoProducto"""
     class Meta:
         model = AtributoProducto
-        fields = ['id', 'nombre', 'tipo', 'opciones'] 
+        fields = ['id', 'nombre', 'tipo', 'opciones']

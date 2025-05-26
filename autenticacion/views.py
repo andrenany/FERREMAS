@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
@@ -27,19 +27,72 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == status.HTTP_200_OK:
+        # Obtener credenciales de la petición
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        # Validar que se proporcionaron las credenciales
+        if not email or not password:
+            return Response(
+                {'detail': 'Se requieren email y contraseña'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Autenticar usuario usando email como username
+        user = authenticate(username=email, password=password)
+        
+        if user is None:
+            return Response(
+                {'detail': 'Credenciales incorrectas'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        if not user.is_active:
+            return Response(
+                {'detail': 'Cuenta desactivada'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Usar el serializer para generar los tokens
+        serializer = self.get_serializer(data=request.data)
+        
+        try:
+            serializer.is_valid(raise_exception=True)
+            response_data = serializer.validated_data
+            
             # Actualizar IP de último login
-            user = self.serializer_class.get_user(request.data)
             user.last_login_ip = request.META.get('REMOTE_ADDR')
-            user.save(update_fields=['last_login_ip'])
-        return response
+            user.last_login = timezone.now()
+            user.save(update_fields=['last_login_ip', 'last_login'])
+            
+            return Response(response_data, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {'detail': 'Error al generar tokens'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class UserViewSet(viewsets.ModelViewSet):
     """ViewSet para gestionar usuarios"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, EsAdminOPropietario]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user.is_authenticated:
+            return User.objects.none()
+
+        if hasattr(user, 'es_administrador') and user.es_administrador():
+            return User.objects.all()
+        
+        if hasattr(user, 'es_vendedor') and user.es_vendedor():
+            return User.objects.all()
+    
+        return User.objects.filter(usuario=user)
+
 
     def get_serializer_class(self):
         if self.action == 'create_cliente':
@@ -55,9 +108,20 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create_cliente':
             return [AllowAny()]
-        elif self.action in ['create_staff', 'create_admin', 'list']:
+        elif self.action in ['create_staff', 'create_admin']:
             return [IsAuthenticated(), EsAdministrador()]
+        elif self.action == 'list':
+            # Permitir que administradores y vendedores vean la lista
+            return [IsAuthenticated(), EsAdminOPropietario()]  # Esto incluye vendedores
+        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            # Para acciones individuales, mantener permisos restrictivos
+            return [IsAuthenticated(), EsAdminOPropietario()]
         return super().get_permissions()
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def direcciones(self, request):
+        """Endpoint temporal para direcciones del usuario"""
+        return Response([])  # Aquí luego puedes retornar datos reales
 
     @action(detail=False, methods=['post'])
     def create_cliente(self, request):
@@ -239,3 +303,4 @@ class UserViewSet(viewsets.ModelViewSet):
             [user.email],
             fail_silently=False,
         )
+

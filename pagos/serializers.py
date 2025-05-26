@@ -1,3 +1,4 @@
+# pagos/serializers.py
 from rest_framework import serializers
 from .models import TransaccionMercadoPago, FacturaElectronica, ConciliacionPago
 from pedidos.serializers import PedidoDetailSerializer
@@ -39,6 +40,14 @@ class FacturaElectronicaSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['numero_factura', 'estado', 'xml_factura', 'pdf_factura', 'track_id', 'respuesta_sii']
 
+    # Validar que todos los campos estén realmente en el modelo
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        model_fields = [f.name for f in self.Meta.model._meta.get_fields()]
+        for field_name in list(self.fields):
+            if field_name not in model_fields and field_name != 'pedido_id':
+                self.fields.pop(field_name)
+
 class ConciliacionPagoSerializer(serializers.ModelSerializer):
     transaccion = TransaccionMercadoPagoSerializer(read_only=True)
     factura = FacturaElectronicaSerializer(read_only=True)
@@ -53,4 +62,4 @@ class ConciliacionPagoSerializer(serializers.ModelSerializer):
             'estado', 'fecha_conciliacion', 'notas', 'conciliado_por',
             'fecha_creacion', 'fecha_actualizacion'
         ]
-        read_only_fields = ['estado', 'fecha_conciliacion', 'conciliado_por'] 
+        read_only_fields = ['estado', 'fecha_conciliacion', 'conciliado_por']

@@ -1,20 +1,18 @@
+# pedidos/models.py
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-from productos.models import Producto
 from django.utils import timezone
+from productos.models import Producto
+from sucursales.models import Sucursal
 
 class Carrito(models.Model):
     """Modelo para manejar el carrito de compras"""
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
-    
-    @property
-    def total(self):
-        return sum(item.subtotal for item in self.items.all())
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     
     @property
     def cantidad_items(self):
@@ -25,11 +23,12 @@ class Carrito(models.Model):
         item, created = CarritoItem.objects.get_or_create(
             carrito=self,
             producto=producto,
-            defaults={'cantidad': cantidad}
+            defaults={'cantidad': cantidad, 'precio_unitario': producto.precio_venta}
         )
         if not created:
             item.cantidad += cantidad
             item.save()
+        self.actualizar_totales()
         return item
     
     def actualizar_cantidad(self, producto, cantidad):
@@ -41,6 +40,7 @@ class Carrito(models.Model):
                 item.save()
             else:
                 item.delete()
+            self.actualizar_totales()
         except CarritoItem.DoesNotExist:
             if cantidad > 0:
                 self.agregar_producto(producto, cantidad)
@@ -48,6 +48,15 @@ class Carrito(models.Model):
     def limpiar(self):
         """Elimina todos los items del carrito"""
         self.items.all().delete()
+        self.actualizar_totales()
+    
+    def actualizar_totales(self):
+        """Calcula y actualiza el total del carrito"""
+        self.total = sum(item.subtotal for item in self.items.all())
+        self.save()
+    
+    def __str__(self):
+        return f"Carrito de {self.usuario.email}"
 
 class CarritoItem(models.Model):
     """Modelo para items en el carrito"""
@@ -67,128 +76,158 @@ class CarritoItem(models.Model):
     @property
     def subtotal(self):
         return self.cantidad * self.precio_unitario
+    
+    def __str__(self):
+        return f"{self.producto.nombre} x {self.cantidad}"
+
+class EstadoPedido(models.Model):
+    """Modelo para estados de pedidos"""
+    nombre = models.CharField(max_length=50, unique=True)
+    descripcion = models.TextField(blank=True)
+    color = models.CharField(max_length=7, default="#000000")
+    orden = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['orden']
+
+    def __str__(self):
+        return self.nombre
 
 class Pedido(models.Model):
     """Modelo principal para pedidos"""
-    ESTADO_CHOICES = [
-        ('pendiente', 'Pendiente de Pago'),
-        ('pagado', 'Pagado'),
-        ('preparacion', 'En Preparación'),
-        ('listo_retiro', 'Listo para Retiro'),
-        ('en_despacho', 'En Despacho'),
-        ('entregado', 'Entregado'),
-        ('cancelado', 'Cancelado')
-    ]
-    
     TIPO_ENTREGA_CHOICES = [
         ('retiro', 'Retiro en Tienda'),
         ('despacho', 'Despacho a Domicilio')
     ]
     
     # Información básica
-    numero = models.CharField(max_length=50, unique=True)
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    numero_pedido = models.CharField(max_length=10, unique=True, editable=False)
+    cliente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='pedidos')
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, related_name='pedidos')
+    vendedor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='pedidos_vendedor'
+    )
+    estado = models.ForeignKey(EstadoPedido, on_delete=models.CASCADE)
+    fecha_pedido = models.DateTimeField(auto_now_add=True)
     
-    # Estado y tipo de entrega
-    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
-    tipo_entrega = models.CharField(max_length=20, choices=TIPO_ENTREGA_CHOICES)
+    # Datos de entrega
+    tipo_entrega = models.CharField(max_length=10, choices=TIPO_ENTREGA_CHOICES)
+    direccion_entrega = models.TextField(null=True, blank=True)
+    fecha_entrega_estimada = models.DateField(null=True, blank=True)
     
-    # Información de contacto y entrega
+    # Información de contacto
     nombre_contacto = models.CharField(max_length=100)
     email_contacto = models.EmailField()
     telefono_contacto = models.CharField(max_length=20)
-    direccion_entrega = models.TextField(blank=True, null=True)
-    ciudad_entrega = models.CharField(max_length=100, blank=True, null=True)
-    region_entrega = models.CharField(max_length=100, blank=True, null=True)
     
-    # Información de pago
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
-    costo_envio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    total = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
-    metodo_pago = models.CharField(max_length=50, blank=True)
-    referencia_pago = models.CharField(max_length=100, blank=True)
+    # Información económica
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    iva = models.DecimalField(max_digits=10, decimal_places=2)
+    descuento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
     
-    # Seguimiento
-    notas = models.TextField(blank=True)
-    fecha_pago = models.DateTimeField(null=True, blank=True)
-    fecha_preparacion = models.DateTimeField(null=True, blank=True)
-    fecha_despacho = models.DateTimeField(null=True, blank=True)
-    fecha_entrega = models.DateTimeField(null=True, blank=True)
-    
+    # Datos adicionales
+    notas = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
-        ordering = ['-fecha_creacion']
-    
+        ordering = ['-fecha_pedido']
+
     def __str__(self):
-        return f"Pedido {self.numero}"
-    
-    def clean(self):
-        """Validaciones personalizadas"""
-        if self.tipo_entrega == 'despacho' and not all([
-            self.direccion_entrega,
-            self.ciudad_entrega,
-            self.region_entrega
-        ]):
-            raise ValidationError({
-                'tipo_entrega': _('Para despacho a domicilio se requiere dirección completa')
-            })
+        return f"Pedido #{self.numero_pedido} - {self.cliente.get_full_name()}"
     
     def save(self, *args, **kwargs):
-        """Sobrescribe el método save para realizar validaciones y cálculos"""
-        if not self.numero:
-            # Generar número de pedido único
+        # Generar número de pedido si es nuevo
+        if not self.numero_pedido:
             ultimo_pedido = Pedido.objects.order_by('-id').first()
-            numero = 1 if not ultimo_pedido else int(ultimo_pedido.numero) + 1
-            self.numero = f"{numero:08d}"
-        
-        # Calcular total
-        self.total = self.subtotal + self.costo_envio
-        
+            ultimo_numero = 1
+            if ultimo_pedido and ultimo_pedido.numero_pedido:
+                try:
+                    ultimo_numero = int(ultimo_pedido.numero_pedido) + 1
+                except ValueError:
+                    ultimo_numero = 1
+            self.numero_pedido = f"{ultimo_numero:08d}"
         super().save(*args, **kwargs)
-    
-    def actualizar_estado(self, nuevo_estado):
-        """Actualiza el estado del pedido y registra la fecha correspondiente"""
-        if nuevo_estado not in dict(self.ESTADO_CHOICES):
-            raise ValidationError(f"Estado inválido: {nuevo_estado}")
-        
-        self.estado = nuevo_estado
-        
-        # Actualizar fechas según el estado
-        if nuevo_estado == 'pagado':
-            self.fecha_pago = timezone.now()
-        elif nuevo_estado == 'preparacion':
-            self.fecha_preparacion = timezone.now()
-        elif nuevo_estado == 'en_despacho':
-            self.fecha_despacho = timezone.now()
-        elif nuevo_estado == 'entregado':
-            self.fecha_entrega = timezone.now()
-        
-        self.save()
 
-class PedidoItem(models.Model):
+    def actualizar_estado(self, nuevo_estado, usuario, notas=""):
+        """Actualiza el estado del pedido y registra el cambio"""
+        estado_anterior = self.estado
+        
+        # Obtener el nuevo objeto EstadoPedido
+        if isinstance(nuevo_estado, str):
+            nuevo_estado_obj = EstadoPedido.objects.get(nombre=nuevo_estado)
+        else:
+            nuevo_estado_obj = nuevo_estado
+            
+        # Actualizar el estado
+        self.estado = nuevo_estado_obj
+        self.save()
+        
+        # Registrar el cambio
+        CambioPedido.objects.create(
+            pedido=self,
+            estado_anterior=estado_anterior.nombre,
+            estado_nuevo=nuevo_estado_obj.nombre,
+            usuario=usuario,
+            notas=notas
+        )
+        
+        return True
+
+class DetallePedido(models.Model):
     """Modelo para items en un pedido"""
-    pedido = models.ForeignKey(Pedido, related_name='items', on_delete=models.PROTECT)
+    pedido = models.ForeignKey(Pedido, related_name='detalles', on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    notas = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
     def save(self, *args, **kwargs):
         """Calcula el subtotal antes de guardar"""
         self.subtotal = self.cantidad * self.precio_unitario
         super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.pedido.numero_pedido} - {self.producto.nombre} x {self.cantidad}"
+
+# Agregar esta clase para mantener la compatibilidad con el código existente
+class PedidoItem(models.Model):
+    """Modelo para items en un pedido"""
+    pedido = models.ForeignKey(Pedido, related_name='items', on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
+    cantidad = models.PositiveIntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    notas = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        """Calcula el subtotal antes de guardar"""
+        self.subtotal = self.cantidad * self.precio_unitario
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.pedido.numero_pedido} - {self.producto.nombre} x {self.cantidad}"
 
 class CambioPedido(models.Model):
     """Modelo para registrar cambios en el estado de los pedidos"""
     pedido = models.ForeignKey(Pedido, related_name='cambios', on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
-    estado_anterior = models.CharField(max_length=20, choices=Pedido.ESTADO_CHOICES)
-    estado_nuevo = models.CharField(max_length=20, choices=Pedido.ESTADO_CHOICES)
+    estado_anterior = models.CharField(max_length=50)
+    estado_nuevo = models.CharField(max_length=50)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     notas = models.TextField(blank=True)
     
     class Meta:
         ordering = ['-fecha']
     
     def __str__(self):
-        return f"{self.pedido.numero}: {self.estado_anterior} -> {self.estado_nuevo}" 
+        return f"{self.pedido.numero_pedido}: {self.estado_anterior} -> {self.estado_nuevo}"

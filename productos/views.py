@@ -161,6 +161,39 @@ class ProductoViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @extend_schema(
+        description="Lista productos relacionados (misma categoría) excluyendo el producto actual.",
+        responses={200: ProductoListSerializer(many=True)}
+    )
+    @action(detail=True, methods=['get'], url_path='relacionados')
+    def relacionados(self, request, slug=None):
+        """Lista productos relacionados por categoría"""
+        try:
+            producto_actual = self.get_object() # Obtiene el producto por el slug
+            categoria_actual = producto_actual.categoria
+
+            # Buscar productos en la misma categoría, excluyendo el producto actual
+            productos_relacionados = Producto.objects.filter(
+                categoria=categoria_actual
+            ).exclude(slug=slug).distinct()[:4] # Limitar a 4 productos
+
+            serializer = ProductoListSerializer(
+                productos_relacionados,
+                many=True,
+                context={'request': request}
+            )
+            return Response(serializer.data)
+        except Producto.DoesNotExist:
+            return Response(
+                {'error': 'Producto no encontrado'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @extend_schema(
         description="Lista los productos que necesitan reposición",
         responses={200: ProductoListSerializer(many=True)}
     )

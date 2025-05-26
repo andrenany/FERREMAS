@@ -124,7 +124,7 @@ class ConciliacionPagoViewSet(viewsets.ModelViewSet):
     serializer_class = ConciliacionPagoSerializer
     permission_classes = [IsAuthenticated, EsContador]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['estado', 'transaccion__pedido__numero']
+    filterset_fields = ['estado', 'transaccion__pedido__numero_pedido']
     
     def get_queryset(self):
         return ConciliacionPago.objects.all()
